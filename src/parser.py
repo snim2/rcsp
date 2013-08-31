@@ -17,14 +17,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# pylint: disable=W0602
+
 try:
     from rpython.rlib import rstring
 except ImportError:
     pass
 
-
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
+
+
+# Set this switch to True to run this interpreter with CPython
+# Set this switch to False to compile this interpreter with rpython
+DEBUG = True
 
 
 OPCODES = {
@@ -42,101 +48,7 @@ OPCODES = {
     }
 
 
-def pretty_print(bytecode, strings, integers, bools):
-    """Pretty print a list of numeric opcodes and lists of constants.
-    This is intended to pretty-print the output of the parser.
-    """
-    def new_bc(bc, pc, output):
-        output.append(str(pc) + ':\t' + bc)
-    pc = 0
-    output = []
-    while pc < len(bytecode):
-        # Arithmetic operation bytecodes.
-        if bytecode[pc] == OPCODES['ADD']:
-            new_bc('ADD', pc, output)
-        elif bytecode[pc] == OPCODES['MINUS']:
-            new_bc('MINUS', pc, output)
-        elif bytecode[pc] == OPCODES['TIMES']:
-            new_bc('TIMES', pc, output)
-        elif bytecode[pc] == OPCODES['DIV']:
-            new_bc('DIV', pc, output)
-        elif bytecode[pc] == OPCODES['MOD']:
-            new_bc('MOD', pc, output)
-        # Comparative operation bytecodes.
-        elif bytecode[pc] == OPCODES['GT']:
-            new_bc('GT', pc, output)
-        elif bytecode[pc] == OPCODES['LT']:
-            new_bc('LT', pc, output)
-        elif bytecode[pc] == OPCODES['GEQ']:
-            new_bc('GEQ', pc, output)
-        elif bytecode[pc] == OPCODES['LEQ']:
-            new_bc('LEQ', pc, output)
-        elif bytecode[pc] == OPCODES['EQ']:
-            new_bc('EQ', pc, output)
-        elif bytecode[pc] == OPCODES['NEQ']:
-            new_bc('NEQ', pc, output)
-        # I/O bytecodes.
-        elif bytecode[pc] == OPCODES['PRINT_ITEM']:
-            new_bc('PRINT_ITEM', pc, output)
-        elif bytecode[pc] == OPCODES['PRINT_NEWLINE']:
-            new_bc('PRINT_NEWLINE', pc, output)
-        # Global variable bytecodes.
-        elif bytecode[pc] == OPCODES['STORE']:
-            new_bc('STORE', pc, output)
-        elif bytecode[pc] == OPCODES['LOAD_GLOBAL']:
-            new_bc('LOAD_GLOBAL ' + strings[bytecode[pc + 1]],
-                   pc,
-                   output)
-            pc += 1
-        elif bytecode[pc] == OPCODES['LOAD_CONST']:
-            new_bc('LOAD_CONST ' + str(integers[bytecode[pc + 1]]),
-                   pc,
-                   output)
-            pc += 1
-        elif bytecode[pc] == OPCODES['LOAD_NAME']:
-            new_bc('LOAD_NAME ' + strings[bytecode[pc + 1]],
-                   pc,
-                   output)
-            pc += 1
-        # Control flow.
-        elif bytecode[pc] == OPCODES['JUMP_FORWARD']:
-            new_bc('JUMP_FORWARD ' + str(integers[bytecode[pc + 1]]),
-                   pc,
-                   output)
-            pc = pc + 1
-        elif bytecode[pc] == OPCODES['POP_JUMP_IF_TRUE']:
-            new_bc('POP_JUMP_IF_TRUE ' + str(integers[bytecode[pc + 1]]),
-                   pc,
-                   output)
-            pc += 1
-        elif bytecode[pc] == OPCODES['POP_JUMP_IF_FALSE']:
-            new_bc('POP_JUMP_IF_FALSE ' + str(integers[bytecode[pc + 1]]),
-                   pc,
-                   output)
-            pc += 1
-        elif bytecode[pc] == OPCODES['JUMP_ABSOLUTE']:
-            new_bc('POP_JUMP_IF_FALSE ' + str(integers[bytecode[pc + 1]]),
-                   pc,
-                   output)
-            pc += 1
-        else:
-            raise TypeError('No such CSPC opcode')
-        pc += 1
-    print 
-    print '...pretty printing parser output...'
-    print
-    print '\n'.join(output)
-    print
-    print 'Integers:', integers
-    print 'Strings:', strings
-    print 'Bools:', bools
-    print
-    print '...pretty printer done...'
-    print
-    return    
-
-
-def parse_bytecode_file(bytecode_file, DEBUG=False):
+def parse_bytecode_file(bytecode_file):
     """Parse a file of bytecode.
 
     The argument should be the text of the original file, with
@@ -146,6 +58,7 @@ def parse_bytecode_file(bytecode_file, DEBUG=False):
 
         opcodes, strings, integers, bools
     """
+    from box import CodeBox
     bytecode = []
     # Split bytecode into individual strings.
     # Throw away comments and whitespace.
@@ -163,7 +76,8 @@ def parse_bytecode_file(bytecode_file, DEBUG=False):
             else:
                 bytecode.extend(rstring.split(line))
     # Parse bytecodes into numeric opcodes.
-    opcodes, strings, integers, bools = [], [], [], []
+    # codes included here for future-proofing.
+    opcodes, strings, integers, bools, codes = [], [], [], [], []
     for code in bytecode:
         # Handle instructions.
         if code in OPCODES.keys():
@@ -179,4 +93,4 @@ def parse_bytecode_file(bytecode_file, DEBUG=False):
             else:
                 strings.append(code)
                 opcodes.append(len(strings) - 1)
-    return opcodes, strings, integers, bools
+    return CodeBox(opcodes, strings, integers, bools, codes)
