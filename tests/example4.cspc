@@ -1,19 +1,20 @@
 # Simple example which simulates a while loop.
 
-LOAD_NAME "counter"
 LOAD_CONST 10
+LOAD_NAME counter
 STORE
 # This will be pc =  5
-LOAD_GLOBAL "counter"
 LOAD_CONST 0
+LOAD_GLOBAL counter
 LT
-POP_JUMP_IF_FALSE 24
-LOAD_GLOBAL "counter"
+POP_JUMP_IF_FALSE 25
+LOAD_GLOBAL counter
 PRINT_ITEM
+LOAD_GLOBAL counter
 LOAD_CONST 1
-LOAD_GLOBAL "counter"
 MINUS
-STORE "counter"
+LOAD_NAME counter
+STORE 
 JUMP_ABSOLUTE 5
 
 # >>> def bar():
