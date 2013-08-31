@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Set this switch to True to run this interpreter with CPython
 # Set this switch to False to compile this interpreter with rpython
-DEBUG = True
+DEBUG = False
 
 import os
 import sys
@@ -38,10 +38,22 @@ __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 
 
+OPCODES = {
+    # Integer arithmetic.
+    'ADD' : 0, 'MINUS' : 1, 'TIMES' : 2, 'DIV' : 3, 'MOD' : 4,
+    # Integer comparisons.
+    'GT' : 5, 'LT': 6, 'EQ' : 7, 'NEQ' : 8, 'GEQ' : 9, 'LEQ' : 10,
+    # I/O.
+    'PRINT_ITEM' : 11, 'PRINT_NEWLINE' : 12,
+    # Global variables.
+    'STORE' : 13, 'LOAD_GLOBAL' : 14, 'LOAD_CONST' : 15, 'LOAD_NAME' : 16,
+    }
+
+
 def parse_bytecode_file(bytecode_file):
-    # TODO: Write a better parser which turns string instructions into
-    # TODO: integer opcodes.
     bytecode = []
+    # Split bytecode into individual strings.
+    # Throw away comments and whitespace.
     for line_ in bytecode_file.split('\n'):
         if DEBUG:
             line = line_.strip()
@@ -55,85 +67,101 @@ def parse_bytecode_file(bytecode_file):
                     bytecode.append(code)
             else:
                 bytecode.extend(rstring.split(line))
-    return bytecode
+    # Parse bytecodes into numeric opcodes.
+    opcodes, strings, integers, bools = [], [], [], []
+    for code in bytecode:
+        # Handle instructions.
+        if code in OPCODES.keys():
+            opcodes.append(OPCODES[code])
+        # Handle literals.
+        else:
+            if code.isdigit():
+                integers.append(int(code))
+                opcodes.append(len(integers) - 1)
+            elif code == 'True' or code == 'False':
+                bools.append(bool(code))
+                opcodes.append(len(bools) - 1)
+            else:
+                strings.append(code)
+                opcodes.append(len(strings) - 1)
+    return opcodes, strings, integers, bools
 
 
-def mainloop(bytecode):
-    # TODO: Turn opcodes into integers
+def mainloop(bytecode, strings, integers, bools):
     pc = 0
     heap = {} # Only have a global heap for now.
     stack = []
     while pc < len(bytecode):
         # Arithmetic operation bytecodes.
-        if bytecode[pc] == 'ADD':
+        if bytecode[pc] == OPCODES['ADD']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.add(r))
-        elif bytecode[pc] == 'MINUS':
+        elif bytecode[pc] == OPCODES['MINUS']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.minus(r))
-        elif bytecode[pc] == 'TIMES':
+        elif bytecode[pc] == OPCODES['TIMES']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.times(r))
-        elif bytecode[pc] == 'DIV':
+        elif bytecode[pc] == OPCODES['DIV']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.div(r))
-        elif bytecode[pc] == 'MOD':
+        elif bytecode[pc] == OPCODES['MOD']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.mod(r))
         # Comparative operation bytecodes.
-        elif bytecode[pc] == 'GT':
+        elif bytecode[pc] == OPCODES['GT']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.gt(r))
-        elif bytecode[pc] == 'LT':
+        elif bytecode[pc] == OPCODES['LT']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.lt(r))
-        elif bytecode[pc] == 'GEQ':
+        elif bytecode[pc] == OPCODES['GEQ']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.geq(r))
-        elif bytecode[pc] == 'LEQ':
+        elif bytecode[pc] == OPCODES['LEQ']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.leq(r))
-        elif bytecode[pc] == 'EQ':
+        elif bytecode[pc] == OPCODES['EQ']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.eq(r))
-        elif bytecode[pc] == 'NEQ':
+        elif bytecode[pc] == OPCODES['NEQ']:
             l = stack.pop()
             r = stack.pop()
             stack.append(l.neq(r))        
         # I/O bytecodes.
-        elif bytecode[pc] == 'PRINT_ITEM':
+        elif bytecode[pc] == OPCODES['PRINT_ITEM']:
             value = stack.pop()
             value.print_nl()
-        elif bytecode[pc] == 'PRINT_NEWLINE':
+        elif bytecode[pc] == OPCODES['PRINT_NEWLINE']:
             print
         # Global variable bytecodes.
-        elif bytecode[pc] == 'STORE':
+        elif bytecode[pc] == OPCODES['STORE']:
             # TODO: A bit of error checking here would be nice.
             name = stack.pop().string
             lit = stack.pop().integer
             heap[name] =  lit
-        elif bytecode[pc] == 'LOAD_GLOBAL':
+        elif bytecode[pc] == OPCODES['LOAD_GLOBAL']:
             # TODO: Should the heap really hold raw string / int types?
             # TODO: Probably not.
-            g = heap[bytecode[pc + 1]]
+            g = heap[strings[bytecode[pc + 1]]]
             stack.append(IntBox(g))
             pc += 1
-        elif bytecode[pc] == 'LOAD_CONST':
-            const = int(bytecode[pc + 1])
+        elif bytecode[pc] == OPCODES['LOAD_CONST']:
+            const = integers[bytecode[pc + 1]]
             stack.append(IntBox(const))
             pc += 1
-        elif bytecode[pc] == 'LOAD_NAME':
-            name = bytecode[pc + 1]
+        elif bytecode[pc] == OPCODES['LOAD_NAME']:
+            name = strings[bytecode[pc + 1]]
             stack.append(StringBox(name))
             pc += 1
         pc += 1
@@ -148,8 +176,8 @@ def run(fp):
             break
         program_contents += read
     os.close(fp)
-    bytecode = parse_bytecode_file(program_contents)
-    mainloop(bytecode)
+    bytecode, strings, integers, bools = parse_bytecode_file(program_contents)
+    mainloop(bytecode, strings, integers, bools)
 
 
 def entry_point(argv):
