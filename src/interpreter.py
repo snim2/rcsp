@@ -36,8 +36,7 @@ def parse_bytecode_file(bytecode_file):
         if line.startswith('#'):
             continue
         else:
-            # TODO: Split on all whitespace.
-            for code in line.split(' '): bytecode.append(code)
+            bytecode.extend(rstring.split(line))
     return bytecode
 
 
