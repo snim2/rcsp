@@ -47,10 +47,117 @@ OPCODES = {
     'PRINT_ITEM' : 11, 'PRINT_NEWLINE' : 12,
     # Global variables.
     'STORE' : 13, 'LOAD_GLOBAL' : 14, 'LOAD_CONST' : 15, 'LOAD_NAME' : 16,
+    # Control flow.
+    'JUMP_FORWARD' : 17, 'POP_JUMP_IF_TRUE' : 18, 'POP_JUMP_IF_FALSE' : 19,
+    'JUMP_ABSOLUTE' : 20,
     }
 
 
+def pretty_print(bytecode, strings, integers, bools):
+    """Pretty print a list of numeric opcodes and lists of constants.
+    This is intended to pretty-print the output of the parser.
+    """
+    def new_bc(bc, pc, output):
+        output.append(str(pc) + ':\t' + bc)
+    pc = 0
+    output = []
+    while pc < len(bytecode):
+        # Arithmetic operation bytecodes.
+        if bytecode[pc] == OPCODES['ADD']:
+            new_bc('ADD', pc, output)
+        elif bytecode[pc] == OPCODES['MINUS']:
+            new_bc('MINUS', pc, output)
+        elif bytecode[pc] == OPCODES['TIMES']:
+            new_bc('TIMES', pc, output)
+        elif bytecode[pc] == OPCODES['DIV']:
+            new_bc('DIV', pc, output)
+        elif bytecode[pc] == OPCODES['MOD']:
+            new_bc('MOD', pc, output)
+        # Comparative operation bytecodes.
+        elif bytecode[pc] == OPCODES['GT']:
+            new_bc('GT', pc, output)
+        elif bytecode[pc] == OPCODES['LT']:
+            new_bc('LT', pc, output)
+        elif bytecode[pc] == OPCODES['GEQ']:
+            new_bc('GEQ', pc, output)
+        elif bytecode[pc] == OPCODES['LEQ']:
+            new_bc('LEQ', pc, output)
+        elif bytecode[pc] == OPCODES['EQ']:
+            new_bc('EQ', pc, output)
+        elif bytecode[pc] == OPCODES['NEQ']:
+            new_bc('NEQ', pc, output)
+        # I/O bytecodes.
+        elif bytecode[pc] == OPCODES['PRINT_ITEM']:
+            new_bc('PRINT_ITEM', pc, output)
+        elif bytecode[pc] == OPCODES['PRINT_NEWLINE']:
+            new_bc('PRINT_NEWLINE', pc, output)
+        # Global variable bytecodes.
+        elif bytecode[pc] == OPCODES['STORE']:
+            new_bc('STORE', pc, output)
+        elif bytecode[pc] == OPCODES['LOAD_GLOBAL']:
+            new_bc('LOAD_GLOBAL ' + strings[bytecode[pc + 1]],
+                   pc,
+                   output)
+            pc += 1
+        elif bytecode[pc] == OPCODES['LOAD_CONST']:
+            new_bc('LOAD_CONST ' + str(integers[bytecode[pc + 1]]),
+                   pc,
+                   output)
+            pc += 1
+        elif bytecode[pc] == OPCODES['LOAD_NAME']:
+            new_bc('LOAD_NAME ' + strings[bytecode[pc + 1]],
+                   pc,
+                   output)
+            pc += 1
+        # Control flow.
+        elif bytecode[pc] == OPCODES['JUMP_FORWARD']:
+            new_bc('JUMP_FORWARD ' + str(integers[bytecode[pc + 1]]),
+                   pc,
+                   output)
+            pc = pc + 1
+        elif bytecode[pc] == OPCODES['POP_JUMP_IF_TRUE']:
+            new_bc('POP_JUMP_IF_TRUE ' + str(integers[bytecode[pc + 1]]),
+                   pc,
+                   output)
+            pc += 1
+        elif bytecode[pc] == OPCODES['POP_JUMP_IF_FALSE']:
+            new_bc('POP_JUMP_IF_FALSE ' + str(integers[bytecode[pc + 1]]),
+                   pc,
+                   output)
+            pc += 1
+        elif bytecode[pc] == OPCODES['JUMP_ABSOLUTE']:
+            new_bc('\tPOP_JUMP_IF_FALSE ' + str(integers[bytecode[pc + 1]]),
+                   pc,
+                   output)
+            pc += 1
+        else:
+            raise TypeError('No such CSPC opcode')
+        pc += 1
+    print 
+    print '...pretty printing parser output...'
+    print
+    print '\n'.join(output)
+    print
+    print 'Integers:', integers
+    print 'Strings:', strings
+    print 'Bools:', bools
+    print
+    print '...pretty printer done...'
+    print
+    return
+    
+
+
 def parse_bytecode_file(bytecode_file):
+    """Parse a file of bytecode.
+
+    The argument should be the text of the original file, with
+    mnemonic bytecodes. The result will be a list of numeric opcodes,
+    defined by the OPCODES dictionary above, and lists of constants,
+    in this order:
+
+        opcodes, strings, integers, bools
+    """
     bytecode = []
     # Split bytecode into individual strings.
     # Throw away comments and whitespace.
@@ -88,55 +195,58 @@ def parse_bytecode_file(bytecode_file):
 
 
 def mainloop(bytecode, strings, integers, bools):
+    """Main loop of the interpreter.
+    """
     pc = 0
     heap = {} # Only have a global heap for now.
     stack = []
     while pc < len(bytecode):
+        if DEBUG: print 'PC:', pc
         # Arithmetic operation bytecodes.
         if bytecode[pc] == OPCODES['ADD']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.add(r))
         elif bytecode[pc] == OPCODES['MINUS']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.minus(r))
         elif bytecode[pc] == OPCODES['TIMES']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.times(r))
         elif bytecode[pc] == OPCODES['DIV']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.div(r))
         elif bytecode[pc] == OPCODES['MOD']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.mod(r))
         # Comparative operation bytecodes.
         elif bytecode[pc] == OPCODES['GT']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.gt(r))
         elif bytecode[pc] == OPCODES['LT']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.lt(r))
         elif bytecode[pc] == OPCODES['GEQ']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.geq(r))
         elif bytecode[pc] == OPCODES['LEQ']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.leq(r))
         elif bytecode[pc] == OPCODES['EQ']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.eq(r))
         elif bytecode[pc] == OPCODES['NEQ']:
-            l = stack.pop()
             r = stack.pop()
+            l = stack.pop()
             stack.append(l.neq(r))        
         # I/O bytecodes.
         elif bytecode[pc] == OPCODES['PRINT_ITEM']:
@@ -164,6 +274,29 @@ def mainloop(bytecode, strings, integers, bools):
             name = strings[bytecode[pc + 1]]
             stack.append(StringBox(name))
             pc += 1
+        # Control flow.
+        elif bytecode[pc] == OPCODES['JUMP_FORWARD']:
+            delta = integers[bytecode[pc + 1]]
+            pc += delta
+        elif bytecode[pc] == OPCODES['POP_JUMP_IF_TRUE']:
+            boolean = stack.pop()
+            if boolean.boolean:
+                new_pc = integers[bytecode[pc + 1]]
+                pc = new_pc - 1
+            else:
+                pc += 1
+        elif bytecode[pc] == OPCODES['POP_JUMP_IF_FALSE']:
+            boolean = stack.pop()
+            if not boolean.boolean:
+                new_pc = integers[bytecode[pc + 1]]
+                pc = new_pc - 1
+            else:
+                pc += 1
+        elif bytecode[pc] == OPCODES['JUMP_ABSOLUTE']:
+            new_pc = integers[bytecode[pc + 1]]
+            pc = new_pc - 1
+        else:
+            raise TypeError('No such CSPC opcode')
         pc += 1
     return
 
@@ -177,6 +310,8 @@ def run(fp):
         program_contents += read
     os.close(fp)
     bytecode, strings, integers, bools = parse_bytecode_file(program_contents)
+    if DEBUG:
+        pretty_print(bytecode, strings, integers, bools)
     mainloop(bytecode, strings, integers, bools)
 
 
