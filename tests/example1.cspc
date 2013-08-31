@@ -1,9 +1,9 @@
 # Print result of 1 + 1
 LOAD_CONST 2
-LOAD_NAME "foobar"
+LOAD_NAME foobar
 STORE
 LOAD_CONST 5
-LOAD_GLOBAL "foobar"
+LOAD_GLOBAL foobar
 TIMES
 PRINT_ITEM
 PRINT_NEWLINE
