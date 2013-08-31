@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Set this switch to True to run this interpreter with CPython
 # Set this switch to False to compile this interpreter with rpython
-DEBUG = True
+DEBUG = False
 
 import os
 import sys
@@ -64,7 +64,8 @@ def mainloop(bytecode, strings, integers, bools):
                                   integers=integers, bools=bools,
                                   # Reds:
                                   stack=stack, heap=heap)
-        if DEBUG: print 'PC:', pc
+        if DEBUG:
+            print 'LEN:', len(bytecode), 'PC:', pc, '\tHEAP:', heap
         # Arithmetic operation bytecodes.
         if bytecode[pc] == OPCODES['ADD']:
             r = stack.pop()
