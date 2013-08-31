@@ -20,23 +20,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=W0613
 # pylint: disable=W0231
 
+# Set this switch to True to run this interpreter with CPython
+# Set this switch to False to compile this interpreter with rpython
+DEBUG = True
+
 import os
-from rpython.rlib import rstring
 import sys
 
+if not DEBUG:
+    from rpython.rlib import rstring
 
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 
 
 def parse_bytecode_file(bytecode_file):
+    # TODO: Write a better parser which turns string instructions into
+    # TODO: integer opcodes.
     bytecode = []
     for line_ in bytecode_file.split('\n'):
-        line = rstring.strip_spaces(line_)
+        if DEBUG:
+            line = line_.strip()
+        else:
+            line = rstring.strip_spaces(line_)
         if line.startswith('#'):
             continue
         else:
-            bytecode.extend(rstring.split(line))
+            if DEBUG:
+                for code in line.split():
+                    bytecode.append(code)
+            else:
+                bytecode.extend(rstring.split(line))
     return bytecode
 
 
@@ -49,14 +63,15 @@ class Box:
         return self.value
 
 class IntBox(Box):
-
+    # TODO: Some of these could be collapsed and refactored.
+    
     def __init__(self, integer):
         self.integer = integer
 
     def add(self, integer):
         if isinstance(integer, IntBox):
             return IntBox(self.integer + integer.integer)
-        raise TypeError
+        raise TypeError("Was expecting an IntBox")
         
     def minus(self, integer):
         if isinstance(integer, IntBox):
@@ -78,18 +93,76 @@ class IntBox(Box):
             return IntBox(self.integer % integer.integer)
         raise TypeError
 
+    def gt(self, integer):
+        if isinstance(integer, IntBox):
+            if self.integer > integer.integer:
+                return BoolBox(True)
+            else: return BoolBox(False)
+        raise TypeError
+
+    def lt(self, integer):
+        if isinstance(integer, IntBox):
+            if self.integer < integer.integer:
+                return BoolBox(True)
+            else: return BoolBox(False)
+        raise TypeError
+
+    def geq(self, integer):
+        if isinstance(integer, IntBox):
+            if self.integer >= integer.integer:
+                return BoolBox(True)
+            else: return BoolBox(False)
+        raise TypeError
+
+    def leq(self, integer):
+        if isinstance(integer, IntBox):
+            if self.integer <= integer.integer:
+                return BoolBox(True)
+            else: return BoolBox(False)
+        raise TypeError
+
+    def eq(self, integer):
+        if isinstance(integer, IntBox):
+            if self.integer == integer.integer:
+                return BoolBox(True)
+            else: return BoolBox(False)
+        raise TypeError
+
+    def neq(self, integer):
+        if isinstance(integer, IntBox):
+            if self.integer != integer.integer:
+                return BoolBox(True)
+            else: return BoolBox(False)
+        raise TypeError
+
+    def print_nl(self):
+        print self.integer
+
 
 class StringBox(Box):
 
     def __init__(self, string):
         self.string = string
 
+    def print_nl(self):
+        print self.string
+
+
+class BoolBox(Box):
+
+    def __init__(self, boolean):
+        self.boolean = boolean
+
+    def print_nl(self):
+        print self.boolean
 
 def mainloop(bytecode):
+    # TODO: Turn opcodes into integers
     pc = 0
     heap = {} # Only have a global heap for now.
     stack = []
     while pc < len(bytecode):
+        # Arithmetic operation bytecodes.
         if bytecode[pc] == 'ADD':
             l = stack.pop()
             r = stack.pop()
@@ -110,14 +183,38 @@ def mainloop(bytecode):
             l = stack.pop()
             r = stack.pop()
             stack.append(l.mod(r))
+        # Comparative operation bytecodes.
+        elif bytecode[pc] == 'GT':
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l.gt(r))
+        elif bytecode[pc] == 'LT':
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l.lt(r))
+        elif bytecode[pc] == 'GEQ':
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l.geq(r))
+        elif bytecode[pc] == 'LEQ':
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l.leq(r))
+        elif bytecode[pc] == 'EQ':
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l.eq(r))
+        elif bytecode[pc] == 'NEQ':
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l.neq(r))        
+        # I/O bytecodes.
         elif bytecode[pc] == 'PRINT_ITEM':
             value = stack.pop()
-            if isinstance(value, IntBox):
-                print value.integer,
-            if isinstance(value, StringBox):
-                print value.string,
+            value.print_nl()
         elif bytecode[pc] == 'PRINT_NEWLINE':
-            print 
+            print
+        # Global variable bytecodes.
         elif bytecode[pc] == 'STORE':
             # TODO: A bit of error checking here would be nice.
             name = stack.pop().string
