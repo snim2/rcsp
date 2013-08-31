@@ -17,6 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+# pylint: disable=W0613
+
+import os
+import sys
+
 
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
@@ -39,38 +44,74 @@ def mainloop(bytecode):
     stack = []
     while pc < len(bytecode):
         if bytecode[pc] == 'ADD':
-            stack.append(stack.pop() + stack.pop())
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l + r)
         elif bytecode[pc] == 'MINUS':
-            stack.append(stack.pop() - stack.pop())
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l - r)
         elif bytecode[pc] == 'TIMES':
-            stack.append(stack.pop() * stack.pop())
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l * r)
         elif bytecode[pc] == 'DIV':
-            stack.append(stack.pop() / stack.pop())
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l / r)
         elif bytecode[pc] == 'MOD':
-            stack.append(stack.pop() % stack.pop())
+            l = stack.pop()
+            r = stack.pop()
+            stack.append(l % r)
         elif bytecode[pc] == 'PRINT_ITEM':
             print stack.pop(),
         elif bytecode[pc] == 'PRINT_NEWLINE':
             print 
         elif bytecode[pc] == 'STORE':
-            heap[stack.pop()] =  stack.pop()
+            name = stack.pop()
+            lit = stack.pop()
+            heap[name] =  lit
         elif bytecode[pc] == 'LOAD_GLOBAL':
-            stack.append(heap[bytecode[pc + 1]])
+            g = heap[bytecode[pc + 1]]
+            stack.append(g)
             pc += 1
         elif bytecode[pc] == 'LOAD_CONST':
-            stack.append(int(bytecode[pc + 1]))
+            const = int(bytecode[pc + 1])
+            stack.append(const)
             pc += 1
         elif bytecode[pc] == 'LOAD_NAME':
-            stack.append(bytecode[pc + 1])
+            name = bytecode[pc + 1]
+            stack.append(name)
             pc += 1
         pc += 1
     return
 
 
-def run(bytecode_file):
-    mainloop(parse_bytecode_file(bytecode_file.read()))
+def run(fp):
+    program_contents = ""
+    while True:
+        read = os.read(fp, 4096)
+        if len(read) == 0:
+            break
+        program_contents += read
+    os.close(fp)
+    bytecode = parse_bytecode_file(program_contents)
+    mainloop(bytecode)
 
-    
+
+def entry_point(argv):
+    try:
+        filename = argv[1]
+    except IndexError:
+        print "You must supply a filename"
+        return 1
+    run(os.open(filename, os.O_RDONLY, 0777))
+    return 0
+
+
+def target(*args):
+    return entry_point, None
+
+
 if __name__ == "__main__":
-    import sys
-    run(open(sys.argv[1], 'r'))
+    entry_point(sys.argv)
