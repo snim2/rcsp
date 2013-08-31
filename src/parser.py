@@ -115,7 +115,7 @@ def pretty_print(bytecode, strings, integers, bools):
                    output)
             pc += 1
         elif bytecode[pc] == OPCODES['JUMP_ABSOLUTE']:
-            new_bc('\tPOP_JUMP_IF_FALSE ' + str(integers[bytecode[pc + 1]]),
+            new_bc('POP_JUMP_IF_FALSE ' + str(integers[bytecode[pc + 1]]),
                    pc,
                    output)
             pc += 1
