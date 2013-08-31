@@ -27,6 +27,10 @@ DEBUG = True
 import os
 import sys
 
+from box import IntBox
+from box import StringBox
+from box import BoolBox
+
 if not DEBUG:
     from rpython.rlib import rstring
 
@@ -53,108 +57,6 @@ def parse_bytecode_file(bytecode_file):
                 bytecode.extend(rstring.split(line))
     return bytecode
 
-
-class Box:
-
-    def __init__(self):
-        raise NotImplementedError
-
-    def value(self):
-        return self.value
-
-class IntBox(Box):
-    # TODO: Some of these could be collapsed and refactored.
-    
-    def __init__(self, integer):
-        self.integer = integer
-
-    def add(self, integer):
-        if isinstance(integer, IntBox):
-            return IntBox(self.integer + integer.integer)
-        raise TypeError("Was expecting an IntBox")
-        
-    def minus(self, integer):
-        if isinstance(integer, IntBox):
-            return IntBox(self.integer - integer.integer)
-        raise TypeError
-        
-    def times(self, integer):
-        if isinstance(integer, IntBox):
-            return IntBox(self.integer * integer.integer)
-        raise TypeError
-        
-    def div(self, integer):
-        if isinstance(integer, IntBox):
-            return IntBox(self.integer / integer.integer)
-        raise TypeError
-        
-    def mod(self, integer):
-        if isinstance(integer, IntBox):
-            return IntBox(self.integer % integer.integer)
-        raise TypeError
-
-    def gt(self, integer):
-        if isinstance(integer, IntBox):
-            if self.integer > integer.integer:
-                return BoolBox(True)
-            else: return BoolBox(False)
-        raise TypeError
-
-    def lt(self, integer):
-        if isinstance(integer, IntBox):
-            if self.integer < integer.integer:
-                return BoolBox(True)
-            else: return BoolBox(False)
-        raise TypeError
-
-    def geq(self, integer):
-        if isinstance(integer, IntBox):
-            if self.integer >= integer.integer:
-                return BoolBox(True)
-            else: return BoolBox(False)
-        raise TypeError
-
-    def leq(self, integer):
-        if isinstance(integer, IntBox):
-            if self.integer <= integer.integer:
-                return BoolBox(True)
-            else: return BoolBox(False)
-        raise TypeError
-
-    def eq(self, integer):
-        if isinstance(integer, IntBox):
-            if self.integer == integer.integer:
-                return BoolBox(True)
-            else: return BoolBox(False)
-        raise TypeError
-
-    def neq(self, integer):
-        if isinstance(integer, IntBox):
-            if self.integer != integer.integer:
-                return BoolBox(True)
-            else: return BoolBox(False)
-        raise TypeError
-
-    def print_nl(self):
-        print self.integer
-
-
-class StringBox(Box):
-
-    def __init__(self, string):
-        self.string = string
-
-    def print_nl(self):
-        print self.string
-
-
-class BoolBox(Box):
-
-    def __init__(self, boolean):
-        self.boolean = boolean
-
-    def print_nl(self):
-        print self.boolean
 
 def mainloop(bytecode):
     # TODO: Turn opcodes into integers
