@@ -1,0 +1,47 @@
+# Simple example which simulates a while loop.
+
+LOAD_NAME "counter"
+LOAD_CONST 10
+STORE
+# This will be pc =  5
+LOAD_GLOBAL "counter"
+LOAD_CONST 0
+LT
+POP_JUMP_IF_FALSE 24
+LOAD_GLOBAL "counter"
+PRINT_ITEM
+LOAD_CONST 1
+LOAD_GLOBAL "counter"
+MINUS
+STORE "counter"
+JUMP_ABSOLUTE 5
+
+# >>> def bar():
+# ...     counter = 10
+# ...     while counter > 0:
+# ...             print counter
+# ...             counter -= 1
+# ... 
+# >>> bar()
+# >>> dis.dis(bar)
+#   2           0 LOAD_CONST               1 (10)
+#               3 STORE_FAST               0 (counter)
+# 
+#   3           6 SETUP_LOOP              31 (to 40)
+#         >>    9 LOAD_FAST                0 (counter)
+#              12 LOAD_CONST               2 (0)
+#              15 COMPARE_OP               4 (>)
+#              18 POP_JUMP_IF_FALSE       39
+# 
+#   4          21 LOAD_FAST                0 (counter)
+#              24 PRINT_ITEM          
+#              25 PRINT_NEWLINE       
+# 
+#   5          26 LOAD_FAST                0 (counter)
+#              29 LOAD_CONST               3 (1)
+#              32 INPLACE_SUBTRACT    
+#              33 STORE_FAST               0 (counter)
+#              36 JUMP_ABSOLUTE            9
+#         >>   39 POP_BLOCK           
+#         >>   40 LOAD_CONST               0 (None)
+#              43 RETURN_VALUE        
