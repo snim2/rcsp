@@ -31,8 +31,21 @@ from box import IntBox
 from box import StringBox
 from box import BoolBox
 
-if not DEBUG:
+try:
     from rpython.rlib import rstring
+    from rpython.rlib.jit import JitDriver
+except ImportError:
+    class JitDriver(object):
+        def __init__(self,**kw): pass
+        def jit_merge_point(self,**kw): pass
+        def can_enter_jit(self,**kw): pass
+
+
+# In the mainloop function green variables are read from, and
+# red variables are written to.
+jitdriver = JitDriver(greens=['pc', 'bytecode', 'strings', 'integers',
+                              'bools'],
+                      reds=['heap', 'stack'])
 
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
@@ -144,8 +157,7 @@ def pretty_print(bytecode, strings, integers, bools):
     print
     print '...pretty printer done...'
     print
-    return
-    
+    return    
 
 
 def parse_bytecode_file(bytecode_file):
@@ -200,7 +212,12 @@ def mainloop(bytecode, strings, integers, bools):
     pc = 0
     heap = {} # Only have a global heap for now.
     stack = []
+
     while pc < len(bytecode):
+        jitdriver.jit_merge_point(pc=pc, bytecode=bytecode, strings=strings,
+                                  integers=integers, bools=bools,
+                                  # Reds:
+                                  stack=stack, heap=heap)
         if DEBUG: print 'PC:', pc
         # Arithmetic operation bytecodes.
         if bytecode[pc] == OPCODES['ADD']:
@@ -327,6 +344,12 @@ def entry_point(argv):
 
 def target(*args):
     return entry_point, None
+
+
+def jitpolicy(driver):
+    if not DEBUG:
+        from rpython.jit.codewriter.policy import JitPolicy
+        return JitPolicy()
 
 
 if __name__ == "__main__":
