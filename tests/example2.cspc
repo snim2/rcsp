@@ -1,0 +1,6 @@
+# Simple comparison
+LOAD_CONST 1
+LOAD_CONST 2
+EQ
+PRINT_ITEM
+PRINT_NEWLINE
