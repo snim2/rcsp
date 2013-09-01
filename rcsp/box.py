@@ -184,65 +184,76 @@ class CodeBox(Box):
             elif self.bytecode[pc] == OPCODES['STORE']:
                 new_bc('STORE', pc, output)
             elif self.bytecode[pc] == OPCODES['LOAD_GLOBAL']:
-                new_bc('LOAD_GLOBAL ' + self.strings[self.bytecode[pc + 1]],
+                new_bc('LOAD_GLOBAL ' +
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       self.strings[self.bytecode[pc + 1]] + ')', 
                        pc,
                        output)
                 pc += 1
             elif self.bytecode[pc] == OPCODES['LOAD_CONST']:
                 new_bc('LOAD_CONST ' +
-                       str(self.integers[self.bytecode[pc + 1]]),
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       str(self.integers[self.bytecode[pc + 1]]) + ')',
                        pc,
                        output)
                 pc += 1
             elif self.bytecode[pc] == OPCODES['LOAD_NAME']:
-                new_bc('LOAD_NAME ' + self.strings[self.bytecode[pc + 1]],
+                new_bc('LOAD_NAME ' +
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       self.strings[self.bytecode[pc + 1]] + ')',
                        pc,
                        output)
                 pc += 1
             # Control flow.
             elif self.bytecode[pc] == OPCODES['JUMP_FORWARD']:
                 new_bc('JUMP_FORWARD ' +
-                       str(self.integers[self.bytecode[pc + 1]]),
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       str(self.integers[self.bytecode[pc + 1]]) + ')',
                        pc,
                        output)
                 pc = pc + 1
             elif self.bytecode[pc] == OPCODES['POP_JUMP_IF_TRUE']:
                 new_bc('POP_JUMP_IF_TRUE ' +
-                       str(self.integers[self.bytecode[pc + 1]]),
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       str(self.integers[self.bytecode[pc + 1]]) + ')',
                        pc,
                        output)
                 pc += 1
             elif self.bytecode[pc] == OPCODES['POP_JUMP_IF_FALSE']:
                 new_bc('POP_JUMP_IF_FALSE ' +
-                       str(self.integers[self.bytecode[pc + 1]]),
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       str(self.integers[self.bytecode[pc + 1]]) + ')',
                        pc,
                        output)
                 pc += 1
             elif self.bytecode[pc] == OPCODES['JUMP_ABSOLUTE']:
                 new_bc('POP_JUMP_IF_FALSE ' +
-                       str(self.integers[self.bytecode[pc + 1]]),
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       str(self.integers[self.bytecode[pc + 1]]) + ')',
                        pc,
                        output)
                 pc += 1
             # Function creation and calls.
             elif self.bytecode[pc] == OPCODES['CALL_FUNCTION']:
                 new_bc('CALL_FUNCTION ' +
-                       str(self.strings[self.bytecode[pc + 1]]),
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       str(self.strings[self.bytecode[pc + 1]]) + ')',
                        pc,
                        output)
                 pc += 1
             elif self.bytecode[pc] == OPCODES['LOAD_ARG']:
                 new_bc('LOAD_ARG ' +
-                       str(self.strings[self.bytecode[pc + 1]]),
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       str(self.strings[self.bytecode[pc + 1]]) + ')',
                        pc,
                        output)
                 pc += 1
             elif self.bytecode[pc] == OPCODES['MAKE_FUNCTION']:
                 new_bc('MAKE_FUNCTION', pc, output)
-                pc += 1
             elif self.bytecode[pc] == OPCODES['RETURN']:
                 new_bc('RETURN ' +
-                       str(self.integers[self.bytecode[pc + 1]]),
+                       str(self.bytecode[pc + 1]) + '\t(' +
+                       str(self.integers[self.bytecode[pc + 1]]) + ')',
                        pc,
                        output)
                 pc += 1
