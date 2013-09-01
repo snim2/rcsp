@@ -28,12 +28,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys
-sys.path.insert(0, "..")
-
 # pylint: disable=W0122
-
-# from __future__ import absolute_import # FIXME - this would be better.
 
 import pytest
 from glob import glob
