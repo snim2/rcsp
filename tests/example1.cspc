@@ -1,4 +1,4 @@
-# Print result of 1 + 1
+# Print result of 2 * 5
 DEF main
 LOAD_CONST 2
 LOAD_NAME foobar
@@ -10,3 +10,31 @@ PRINT_ITEM
 PRINT_NEWLINE
 RETURN 0
 ENDDEF
+
+#
+# TEST_DATA
+#
+# expected = ProgramBox({ 'main' : CodeBox([OPCODES['LOAD_CONST'],
+#                                           0,
+#                                           OPCODES['LOAD_NAME'],
+#                                           0,   
+#                                           OPCODES['STORE'],
+#                                           OPCODES['LOAD_CONST'],
+#                                           1,
+#                                           OPCODES['LOAD_GLOBAL'],
+#                                           1,
+#                                           OPCODES['TIMES'],
+#                                           OPCODES['PRINT_ITEM'],
+#                                           OPCODES['PRINT_NEWLINE'],
+#                                           OPCODES['RETURN'],
+#                                           2],
+#                                          ['foobar', 'foobar'], # Strings
+#                                          [2, 5, 0],            # Integers
+#                                          [])                   # Bools
+#                         }
+#                       )
+# expected_stack = [ 0 ]
+# expected_heap = { 'foobar' : 2 }
+#
+# END_TEST_DATA
+#

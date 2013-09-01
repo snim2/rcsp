@@ -48,3 +48,47 @@ ENDDEF
 #         >>   39 POP_BLOCK           
 #         >>   40 LOAD_CONST               0 (None)
 #              43 RETURN_VALUE        
+
+
+# 
+# TEST_DATA
+#
+# expected = ProgramBox({ 'main' : CodeBox([OPCODES['LOAD_CONST'],
+#                                           0,
+#                                           OPCODES['LOAD_NAME'],
+#                                           0,
+#                                           OPCODES['STORE'],
+#                                           OPCODES['LOAD_CONST'],
+#                                           1,
+#                                           OPCODES['LOAD_GLOBAL'],
+#                                           1,
+#                                           OPCODES['LT'],
+#                                           OPCODES['POP_JUMP_IF_FALSE'],
+#                                           2,
+#                                           OPCODES['LOAD_GLOBAL'],
+#                                           2,
+#                                           OPCODES['PRINT_ITEM'],
+#                                           OPCODES['LOAD_GLOBAL'],
+#                                           3,
+#                                           OPCODES['LOAD_CONST'],
+#                                           3,
+#                                           OPCODES['MINUS'],
+#                                           OPCODES['LOAD_NAME'],
+#                                           4,
+#                                           OPCODES['STORE'],
+#                                           OPCODES['JUMP_ABSOLUTE'],
+#                                           4,
+#                                           OPCODES['RETURN'],
+#                                           5],
+#                                          ['counter', 'counter',
+#                                           'counter', 'counter',
+#                                           'counter'],
+#                                          [10, 0, 25, 1, 5, 0],
+#                                          [])
+#                         }
+#                       )
+# expected_stack = [0]
+# expected_heap = {'counter' : 0}
+#
+# END_TEST_DATA
+#

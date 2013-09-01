@@ -7,3 +7,22 @@ PRINT_ITEM
 PRINT_NEWLINE
 RETURN 0
 ENDDEF
+
+# TEST_DATA
+# expected = ProgramBox({ 'main' : CodeBox([OPCODES['LOAD_CONST'],
+#                                           0,
+#                                           OPCODES['LOAD_CONST'],
+#                                           1,
+#                                           OPCODES['EQ'],
+#                                           OPCODES['PRINT_ITEM'],
+#                                           OPCODES['PRINT_NEWLINE'],
+#                                           OPCODES['RETURN'],
+#                                           2],
+#                                          [],    # Strings
+#                                          [1, 2, 0], # Integers
+#                                          [])    # Bools
+#                         }
+#                       )
+# expected_stack = [0]
+# expected_heap = {}
+# END_TEST_DATA

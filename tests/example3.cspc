@@ -29,3 +29,32 @@ LOAD_CONST 200
 PRINT_ITEM
 RETURN 0
 ENDDEF
+
+
+# TEST_DATA
+# expected = ProgramBox({ 'main' : CodeBox([OPCODES['LOAD_CONST'],
+#                                           0,
+#                                           OPCODES['LOAD_CONST'],
+#                                           1,
+#                                           OPCODES['LT'],  
+#                                           OPCODES['POP_JUMP_IF_FALSE'],
+#                                           2,
+#                                           OPCODES['LOAD_CONST'],
+#                                           3,
+#                                           OPCODES['PRINT_ITEM'],
+#                                           OPCODES['JUMP_FORWARD'],
+#                                           4,
+#                                           OPCODES['LOAD_CONST'],
+#                                           5,
+#                                           OPCODES['PRINT_ITEM'],
+#                                           OPCODES['RETURN'],
+#                                           6],
+#                                          [],    # Strings
+#                                          [1, 2, 12, 100, 4, 200, 0],
+#                                          [])    # Bools
+#                         }
+#                       )
+# expected_stack = [0]
+# expected_heap = {}
+#
+# END_TEST_DATA

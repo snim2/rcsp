@@ -1,6 +1,6 @@
 # Simple function example...
+
 DEF foobar
-# think about this
 LOAD_ARG n 
 PRINT_ITEM
 LOAD_CONST 0
@@ -13,3 +13,38 @@ LOAD_CONST 100
 CALL_FUNCTION foobar
 RETURN 0
 ENDDEF
+
+#
+# TEST_DATA
+#
+# expected = ProgramBox({ 'main' : CodeBox([OPCODES['LOAD_GLOBAL'],
+#                                           0,
+#                                           OPCODES['LOAD_CONST'],
+#                                           0,
+#                                           OPCODES['CALL_FUNCTION'],
+#                                           1,
+#                                           OPCODES['RETURN'],
+#                                           1],
+#                                          ['foobar', 'foobar'],
+#                                          [100, 0],
+#                                          []),
+                            
+#                         'foobar' : CodeBox([OPCODES['LOAD_ARG'],
+#                                             0,
+#                                             OPCODES['PRINT_ITEM'],
+#                                             OPCODES['LOAD_CONST'],
+#                                             0,
+#                                             OPCODES['RETURN'],
+#                                             1,
+#                                             ],
+#                                            ['n'],
+#                                            [0, 0],
+#                                            [],
+#                                            ),
+#                         }
+#                       )
+# expected_stack = [0]
+# expected_heap = {'counter' : 0}
+#
+# END_TEST_DATA
+#
