@@ -166,8 +166,7 @@ def mainloop(program):
             raise TypeError('No such CSPC opcode: ' + str(code.bytecode[pc]))
         pc += 1
     if DEBUG:
-        print ('LEN:', len(code.bytecode), 'PC:', pc, '\tSTACK:', stack,
-               '\tHEAP:', heap)
+        print 'LEN:', len(code.bytecode), 'PC:', pc, '\tSTACK:', stack, '\tHEAP:', heap
     return stack, heap
 
 
@@ -180,7 +179,7 @@ def run(fp):
         program_contents += read
     os.close(fp)
     program = parse_bytecode_file(program_contents)
-    if DEBUG: program.pretty_print()
+    if DEBUG: print program
     _, _ = mainloop(program)
 
 

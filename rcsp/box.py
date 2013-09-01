@@ -175,14 +175,14 @@ class CodeBox(Box):
         self.integers = integers
         self.bools = bools
 
-    def pretty_print(self):
+    def __repr__(self):
         """Pretty print a list of numeric opcodes and lists of constants.
         This is intended to pretty-print the output of the parser.
         """
         def new_bc(bc, pc, output):
             output.append(str(pc) + ':\t' + bc)
         pc = 0
-        output = []
+        output = ['CODE']
         while pc < len(self.bytecode):
             # Arithmetic operation bytecodes.
             if self.bytecode[pc] == opcode('ADD'):
@@ -294,16 +294,14 @@ class CodeBox(Box):
             else:
                 raise TypeError('No such CSPC opcode')
             pc += 1
-        print
-        print 'CODE:'
-        print '\n'.join(output)
-        print
-        print 'DATA:'
-        print '\tIntegers:', self.integers
-        print '\tStrings:', self.strings
-        print '\tBools:', self.bools
-        print
-        return    
+        output.append('\n')
+        output.append('DATA:')
+        output.append('\tIntegers: ' + repr(self.integers))
+        output.append('\tStrings: ' + repr(self.strings))
+        output.append('\tBools:' + repr(self.bools))
+        output.append('\n')
+        return '\n'.join(output)
+
 
 class ProgramBox(Box):
     
@@ -316,13 +314,12 @@ class ProgramBox(Box):
     def get_functions(self):
         return self.functions.keys()
 
-    def pretty_print(self):
-        print 
-        print '...pretty printing parser output...'
+    def __repr__(self):
+        output = ['\n', '...pretty printing parser output...']
         for name in self.functions:
-            print 'DEF', name
-            self.functions[name].pretty_print()
-            print 'ENDDEF'
-        print '...pretty printer done...'
-        print
-        return
+            output.append('DEF ' + name + '\n')
+            output.append(repr(self.functions[name]))
+            output.append('ENDDEF')
+        output.append('...pretty printer done...')
+        output.append('\n')
+        return '\n'.join(output)
