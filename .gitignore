@@ -1,4 +1,8 @@
 translate.sh
 interpreter-c
 
+tests/scratch
+
 *.pyc
+
+__pycache__
