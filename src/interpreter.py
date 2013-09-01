@@ -49,13 +49,13 @@ __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 
 
-def mainloop(code):
+def mainloop(program):
     """Main loop of the interpreter.
     """
     pc = 0
     heap = {} # Only have a global heap for now.
     stack = []
-
+    code = program.get('main')
     while pc < len(code.bytecode):
         jitdriver.jit_merge_point(pc=pc, code=code, # Greens.
                                   # Reds:
@@ -155,6 +155,16 @@ def mainloop(code):
         elif code.bytecode[pc] == OPCODES['JUMP_ABSOLUTE']:
             new_pc = code.integers[code.bytecode[pc + 1]]
             pc = new_pc - 1
+        # Function creation and calls.
+        # TODO: 'CALL_FUNCTION'
+        # TODO: 'LOAD_ARG'
+        # TODO: 'MAKE_FUNCTION'
+        # 'RETURN' : 24,
+        elif code.bytecode[pc] == OPCODES['RETURN']:
+            ret_value = code.integers[code.bytecode[pc + 1]]
+            stack.append(ret_value)
+            pc += 1
+        # Unknown opcode.
         else:
             raise TypeError('No such CSPC opcode')
         pc += 1
@@ -169,10 +179,10 @@ def run(fp):
             break
         program_contents += read
     os.close(fp)
-    code = parse_bytecode_file(program_contents)
+    program = parse_bytecode_file(program_contents)
     if DEBUG:
-        code.pretty_print()
-    mainloop(code)
+        program.pretty_print()
+    mainloop(program)
 
 
 def entry_point(argv):

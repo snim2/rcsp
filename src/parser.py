@@ -24,6 +24,7 @@ try:
 except ImportError:
     pass
 
+
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 
@@ -32,6 +33,7 @@ __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 # Set this switch to False to compile this interpreter with rpython
 DEBUG = True
 
+# TODO: Make access to the opcodes a @purefunction decorated function.
 
 OPCODES = {
     # Integer arithmetic.
@@ -45,20 +47,20 @@ OPCODES = {
     # Control flow.
     'JUMP_FORWARD' : 17, 'POP_JUMP_IF_TRUE' : 18, 'POP_JUMP_IF_FALSE' : 19,
     'JUMP_ABSOLUTE' : 20,
+    # Function creation and calls.
+    'CALL_FUNCTION' : 21,
+    'LOAD_ARG' : 22,
+    'MAKE_FUNCTION' : 23, # Future-proofing...
+    'RETURN' : 24,
     }
 
 
 def parse_bytecode_file(bytecode_file):
     """Parse a file of bytecode.
-
     The argument should be the text of the original file, with
-    mnemonic bytecodes. The result will be a list of numeric opcodes,
-    defined by the OPCODES dictionary above, and lists of constants,
-    in this order:
-
-        opcodes, strings, integers, bools
+    mnemonic bytecodes. The result will be a code object.
     """
-    from box import CodeBox
+    from box import CodeBox, ProgramBox
     bytecode = []
     # Split bytecode into individual strings.
     # Throw away comments and whitespace.
@@ -77,20 +79,38 @@ def parse_bytecode_file(bytecode_file):
                 bytecode.extend(rstring.split(line))
     # Parse bytecodes into numeric opcodes.
     # codes included here for future-proofing.
-    opcodes, strings, integers, bools, codes = [], [], [], [], []
-    for code in bytecode:
-        # Handle instructions.
-        if code in OPCODES.keys():
-            opcodes.append(OPCODES[code])
-        # Handle literals.
-        else:
-            if code.isdigit():
-                integers.append(int(code))
-                opcodes.append(len(integers) - 1)
-            elif code == 'True' or code == 'False':
-                bools.append(bool(code))
-                opcodes.append(len(bools) - 1)
-            else:
-                strings.append(code)
-                opcodes.append(len(strings) - 1)
-    return CodeBox(opcodes, strings, integers, bools, codes)
+    functions = {} # Dict of str names -> CodeBox objects
+    counter  = 0
+    while counter < len(bytecode):
+        opcodes, strings, integers, bools = [], [], [], []
+        name = '' # Name of each function which is parsed.
+        code = bytecode[counter]
+        # Parse a list of functions.
+        if code == 'DEF':
+            counter += 1 # Skip DEF.
+            name = bytecode[counter]
+            counter += 1 # Skip name of function.
+            code = bytecode[counter]
+            # TODO: Enable nested functions.
+            while code != 'ENDDEF': 
+                # Handle general instructions.
+                if code in OPCODES.keys():
+                    opcodes.append(OPCODES[code])
+                # Handle literals.
+                else:
+                    if code.isdigit():
+                        integers.append(int(code))
+                        opcodes.append(len(integers) - 1)
+                    elif code == 'True' or code == 'False':
+                        bools.append(bool(code))
+                        opcodes.append(len(bools) - 1)
+                    else:
+                        strings.append(code)
+                        opcodes.append(len(strings) - 1)
+                counter += 1
+                code = bytecode[counter]
+            # codes_ is an empty list since we don't yet have nested fns.
+            functions[name] = CodeBox(opcodes, strings, integers, bools)
+            # Ignore ENDDEF
+            counter += 1
+    return ProgramBox(functions)

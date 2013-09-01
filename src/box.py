@@ -136,12 +136,11 @@ class BoolBox(Box):
 
 class CodeBox(Box):
     
-    def __init__(self, bytecode, strings, integers, bools, codes):
+    def __init__(self, bytecode, strings, integers, bools):
         self.bytecode = bytecode
         self.strings = strings
         self.integers = integers
         self.bools = bools
-        self.codes = codes
 
     def pretty_print(self):
         """Pretty print a list of numeric opcodes and lists of constants.
@@ -225,19 +224,58 @@ class CodeBox(Box):
                        pc,
                        output)
                 pc += 1
+            # Function creation and calls.
+            elif self.bytecode[pc] == OPCODES['CALL_FUNCTION']:
+                new_bc('CALL_FUNCTION ' +
+                       str(self.strings[self.bytecode[pc + 1]]),
+                       pc,
+                       output)
+                pc += 1
+            elif self.bytecode[pc] == OPCODES['LOAD_ARG']:
+                new_bc('LOAD_ARG ' +
+                       str(self.strings[self.bytecode[pc + 1]]),
+                       pc,
+                       output)
+                pc += 1
+            elif self.bytecode[pc] == OPCODES['MAKE_FUNCTION']:
+                new_bc('MAKE_FUNCTION', pc, output)
+                pc += 1
+            elif self.bytecode[pc] == OPCODES['RETURN']:
+                new_bc('RETURN ' +
+                       str(self.integers[self.bytecode[pc + 1]]),
+                       pc,
+                       output)
+                pc += 1
+            # Unknown bytecode.
             else:
                 raise TypeError('No such CSPC opcode')
             pc += 1
-        print 
-        print '...pretty printing parser output...'
         print
+        print 'CODE:'
         print '\n'.join(output)
         print
-        print 'Integers:', self.integers
-        print 'Strings:', self.strings
-        print 'Bools:', self.bools
-        print
-        print '...pretty printer done...'
+        print 'DATA:'
+        print '\tIntegers:', self.integers
+        print '\tStrings:', self.strings
+        print '\tBools:', self.bools
         print
         return    
 
+class ProgramBox(Box):
+    
+    def __init__(self, cb_dict):
+        self.functions = cb_dict # dict of code boxes
+
+    def get(self, name):
+        return self.functions[name]
+
+    def pretty_print(self):
+        print 
+        print '...pretty printing parser output...'
+        for name in self.functions:
+            print 'DEF', name
+            self.functions[name].pretty_print()
+            print 'ENDDEF'
+        print '...pretty printer done...'
+        print
+        return
