@@ -33,7 +33,7 @@ ENDDEF
 #                                          [])                   # Bools
 #                         }
 #                       )
-# expected_stack = [ 0 ]
+# expected_stack = [ IntBox(0) ]
 # expected_heap = { 'foobar' : 2 }
 #
 # END_TEST_DATA

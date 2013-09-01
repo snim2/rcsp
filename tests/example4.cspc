@@ -87,7 +87,7 @@ ENDDEF
 #                                          [])
 #                         }
 #                       )
-# expected_stack = [0]
+# expected_stack = [ IntBox(0) ]
 # expected_heap = {'counter' : 0}
 #
 # END_TEST_DATA

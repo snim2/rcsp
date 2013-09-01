@@ -34,6 +34,7 @@ import pytest
 from glob import glob
 from rcsp.parser import parse_bytecode_file
 
+from rcsp.box import IntBox              # Needed by exec()
 from rcsp.parser import OPCODES          # Needed by exec()
 from rcsp.box import ProgramBox, CodeBox # Needed by exec()
 

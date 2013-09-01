@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from glob import glob
 import pytest
 
+from rcsp.box import IntBox
 from rcsp.parser import parse_bytecode_file
 from rcsp.interpreter import mainloop
 
@@ -40,7 +41,8 @@ def assert_runtime_correct(actual_stack, actual_heap,
                            expected_stack, expected_heap):
     """Assert that expected and actual stack and heaps are identical.
     """
-    assert actual_stack == expected_stack
+    for index, _ in enumerate(actual_stack):
+        assert actual_stack[index] == expected_stack[index]
     assert actual_heap == expected_heap
     return
 
