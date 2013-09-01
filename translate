@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+pypy_dir = '/opt/pypy' # EDIT THIS IF NECESSARY. 
+
+if __name__ == '__main__':
+    import subprocess
+    debug_file = 'rcsp/parser.py'
+    rpython = pypy_dir + '/rpython/bin/rpython'
+    opts = '--opt=jit'
+    try:
+        retcode = subprocess.check_output(['grep', 'DEBUG = True', debug_file])
+        print 'Please turn OFF the DEBUG switch in', debug_file, 'before translating.'
+    except subprocess.CalledProcessError:
+        subprocess.call((rpython, opts, 'rcsp/interpreter.py'))
