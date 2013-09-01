@@ -50,8 +50,8 @@ __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 def mainloop(program):
     """Main loop of the interpreter.
     """
-    pc = 0
-    heap = {} # Only have a global heap for now.
+    pc = 0     # Program counter is the 'top' of the stack.
+    heap = {}  # Only have a global heap for now.
     stack = []
     code = program.get('main')
     while pc < len(code.bytecode):
@@ -108,7 +108,7 @@ def mainloop(program):
         # I/O code.bytecodes.
         elif code.bytecode[pc] == opcode('PRINT_ITEM'):
             value = stack.pop()
-            print value
+            print value.__repr__()
         elif code.bytecode[pc] == opcode('PRINT_NEWLINE'):
             print
         # Global variable code.bytecodes.
@@ -187,7 +187,7 @@ def entry_point(argv):
     try:
         filename = argv[1]
     except IndexError:
-        print "You must supply a filename"
+        print 'You must supply a filename'
         return 1
     run(os.open(filename, os.O_RDONLY, 0777))
     return 0

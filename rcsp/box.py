@@ -130,9 +130,6 @@ class StringBox(Box):
     def __init__(self, string):
         self.string = string
 
-    def print_nl(self):
-        print self.string
-
     def __repr__(self):
         return self.string
 
@@ -150,9 +147,6 @@ class BoolBox(Box):
 
     def __init__(self, boolean):
         self.boolean = boolean
-
-    def print_nl(self):
-        print self.boolean
 
     def __repr__(self):
         return str(self.boolean)
@@ -176,8 +170,9 @@ class CodeBox(Box):
         self.bools = bools
 
     def __repr__(self):
-        """Pretty print a list of numeric opcodes and lists of constants.
-        This is intended to pretty-print the output of the parser.
+        """Return a string representation of a list of numeric opcodes
+        and the data associated with them.  This is used to
+        pretty-print the output of the parser.
         """
         def new_bc(bc, pc, output):
             output.append(str(pc) + ':\t' + bc)
@@ -292,15 +287,29 @@ class CodeBox(Box):
                 pc += 1
             # Unknown bytecode.
             else:
-                raise TypeError('No such CSPC opcode')
+                raise TypeError('No such CSPC opcode: ' + str(self.bytecode[pc]))
             pc += 1
         output.append('\n')
         output.append('DATA:')
-        output.append('\tIntegers: ' + repr(self.integers))
-        output.append('\tStrings: ' + repr(self.strings))
-        output.append('\tBools:' + repr(self.bools))
+        i_s = self.int_list_to_str(self.integers)
+        s_s = self.str_list_to_str(self.strings)
+        b_s = self.bool_list_to_str(self.bools)
+        output.append('\tIntegers: ' + i_s)
+        output.append('\tStrings: ' + s_s)
+        output.append('\tBools: ' + b_s)
         output.append('\n')
         return '\n'.join(output)
+
+    def str_list_to_str(self, lst):
+        return '[ ' + ', '.join(lst) + ' ]'
+
+    def bool_list_to_str(self, lst):
+        s_lst = [str(l) for l in lst]
+        return '[ ' + ', '.join(s_lst) + ' ]'    
+    
+    def int_list_to_str(self, lst):
+        s_lst = [str(l) for l in lst]
+        return '[ ' + ', '.join(s_lst) + ' ]'
 
 
 class ProgramBox(Box):
@@ -318,7 +327,7 @@ class ProgramBox(Box):
         output = ['\n', '...pretty printing parser output...']
         for name in self.functions:
             output.append('DEF ' + name + '\n')
-            output.append(repr(self.functions[name]))
+            output.append(self.functions[name].__repr__())
             output.append('ENDDEF')
         output.append('...pretty printer done...')
         output.append('\n')
