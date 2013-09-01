@@ -1,0 +1,3 @@
+#!/bin/sh
+
+PYPYLOG=jit-log-opt:out ./rcsp $1

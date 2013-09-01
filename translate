@@ -6,7 +6,7 @@ if __name__ == '__main__':
     import subprocess
     debug_file = 'rcsp/parser.py'
     rpython = pypy_dir + '/rpython/bin/rpython'
-    opts = '--opt=jit'
+    opts = '--output=rcsp --opt=jit'
     try:
         retcode = subprocess.check_output(['grep', 'DEBUG = True', debug_file])
         print 'Please turn OFF the DEBUG switch in', debug_file, 'before translating.'

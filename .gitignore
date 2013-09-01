@@ -1,7 +1,10 @@
 interpreter-c
+rcsp
 
 tests/scratch.py
 
 *.pyc
 
 __pycache__
+
+out
