@@ -35,6 +35,7 @@ sys.path.insert(0, "..")
 
 # from __future__ import absolute_import # FIXME - this would be better.
 
+import pytest
 from glob import glob
 from rcsp.parser import parse_bytecode_file
 
@@ -97,11 +98,11 @@ def process_one_file(filename):
     return
 
 
-def test_all_files():
+@pytest.mark.parametrize(("filename",),
+                         [(foo,) for foo in glob('tests/example*.cspc')]) 
+def test_all_files(filename):
     """Test all example files in the tests/ directory.
     """
-    files = glob('tests/example*.cspc')
-    for filename in files:
-        process_one_file(filename)
+    process_one_file(filename)
     return
 
