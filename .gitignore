@@ -1,7 +1,7 @@
-translate.sh
+translate.py
 interpreter-c
 
-tests/scratch
+tests/scratch.py
 
 *.pyc
 
