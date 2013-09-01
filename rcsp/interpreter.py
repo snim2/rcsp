@@ -27,7 +27,7 @@ import sys
 from rcsp.box import IntBox
 from rcsp.box import StringBox
 
-from rcsp.parser import OPCODES, parse_bytecode_file, DEBUG
+from rcsp.parser import opcode, opcode_mnemonics, parse_bytecode_file, DEBUG
 
 try:
     from rpython.rlib.jit import JitDriver
@@ -55,102 +55,101 @@ def mainloop(program):
     stack = []
     code = program.get('main')
     while pc < len(code.bytecode):
-        jitdriver.jit_merge_point(pc=pc, code=code, # Greens.
-                                  # Reds:
-                                  stack=stack, heap=heap)
+        jitdriver.jit_merge_point(pc=pc, code=code,       # Greens.
+                                  stack=stack, heap=heap) # Reds.
         if DEBUG:
-            print 'LEN:', len(code.bytecode), 'PC:', pc, '\tHEAP:', heap
+            print 'LEN:', len(code.bytecode), 'PC:', pc, '\tSTACK:', stack, '\tHEAP:', heap
         # Arithmetic operation code.bytecodes.
-        if code.bytecode[pc] == OPCODES['ADD']:
+        if code.bytecode[pc] == opcode('ADD'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.add(r))
-        elif code.bytecode[pc] == OPCODES['MINUS']:
+        elif code.bytecode[pc] == opcode('MINUS'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.minus(r))
-        elif code.bytecode[pc] == OPCODES['TIMES']:
+        elif code.bytecode[pc] == opcode('TIMES'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.times(r))
-        elif code.bytecode[pc] == OPCODES['DIV']:
+        elif code.bytecode[pc] == opcode('DIV'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.div(r))
-        elif code.bytecode[pc] == OPCODES['MOD']:
+        elif code.bytecode[pc] == opcode('MOD'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.mod(r))
         # Comparative operation code.bytecodes.
-        elif code.bytecode[pc] == OPCODES['GT']:
+        elif code.bytecode[pc] == opcode('GT'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.gt(r))
-        elif code.bytecode[pc] == OPCODES['LT']:
+        elif code.bytecode[pc] == opcode('LT'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.lt(r))
-        elif code.bytecode[pc] == OPCODES['GEQ']:
+        elif code.bytecode[pc] == opcode('GEQ'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.geq(r))
-        elif code.bytecode[pc] == OPCODES['LEQ']:
+        elif code.bytecode[pc] == opcode('LEQ'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.leq(r))
-        elif code.bytecode[pc] == OPCODES['EQ']:
+        elif code.bytecode[pc] == opcode('EQ'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.eq(r))
-        elif code.bytecode[pc] == OPCODES['NEQ']:
+        elif code.bytecode[pc] == opcode('NEQ'):
             r = stack.pop()
             l = stack.pop()
             stack.append(l.neq(r))        
         # I/O code.bytecodes.
-        elif code.bytecode[pc] == OPCODES['PRINT_ITEM']:
+        elif code.bytecode[pc] == opcode('PRINT_ITEM'):
             value = stack.pop()
-            value.print_nl()
-        elif code.bytecode[pc] == OPCODES['PRINT_NEWLINE']:
+            print value
+        elif code.bytecode[pc] == opcode('PRINT_NEWLINE'):
             print
         # Global variable code.bytecodes.
-        elif code.bytecode[pc] == OPCODES['STORE']:
+        elif code.bytecode[pc] == opcode('STORE'):
             # TODO: A bit of error checking here would be nice.
             name = stack.pop().string
             lit = stack.pop().integer
             heap[name] =  lit
-        elif code.bytecode[pc] == OPCODES['LOAD_GLOBAL']:
+        elif code.bytecode[pc] == opcode('LOAD_GLOBAL'):
             # TODO: Should the heap really hold raw string / int types?
             # TODO: Probably not.
             g = heap[code.strings[code.bytecode[pc + 1]]]
             stack.append(IntBox(g))
             pc += 1
-        elif code.bytecode[pc] == OPCODES['LOAD_CONST']:
+        elif code.bytecode[pc] == opcode('LOAD_CONST'):
             const = code.integers[code.bytecode[pc + 1]]
             stack.append(IntBox(const))
             pc += 1
-        elif code.bytecode[pc] == OPCODES['LOAD_NAME']:
+        elif code.bytecode[pc] == opcode('LOAD_NAME'):
             name = code.strings[code.bytecode[pc + 1]]
             stack.append(StringBox(name))
             pc += 1
         # Control flow.
-        elif code.bytecode[pc] == OPCODES['JUMP_FORWARD']:
+        elif code.bytecode[pc] == opcode('JUMP_FORWARD'):
             delta = code.integers[code.bytecode[pc + 1]]
             pc += delta
-        elif code.bytecode[pc] == OPCODES['POP_JUMP_IF_TRUE']:
+        elif code.bytecode[pc] == opcode('POP_JUMP_IF_TRUE'):
             boolean = stack.pop()
             if boolean.boolean:
                 new_pc = code.integers[code.bytecode[pc + 1]]
                 pc = new_pc - 1
             else:
                 pc += 1
-        elif code.bytecode[pc] == OPCODES['POP_JUMP_IF_FALSE']:
+        elif code.bytecode[pc] == opcode('POP_JUMP_IF_FALSE'):
             boolean = stack.pop()
             if not boolean.boolean:
                 new_pc = code.integers[code.bytecode[pc + 1]]
                 pc = new_pc - 1
             else:
                 pc += 1
-        elif code.bytecode[pc] == OPCODES['JUMP_ABSOLUTE']:
+        elif code.bytecode[pc] == opcode('JUMP_ABSOLUTE'):
             new_pc = code.integers[code.bytecode[pc + 1]]
             pc = new_pc - 1
         # Function creation and calls.
@@ -158,14 +157,17 @@ def mainloop(program):
         # TODO: 'LOAD_ARG'
         # TODO: 'MAKE_FUNCTION'
         # 'RETURN'
-        elif code.bytecode[pc] == OPCODES['RETURN']:
+        elif code.bytecode[pc] == opcode('RETURN'):
             ret_value = code.integers[code.bytecode[pc + 1]]
-            stack.append(ret_value)
+            stack.append(IntBox(ret_value))
             pc += 1
-        # Unknown opcode.
-        else:
-            raise TypeError('No such CSPC opcode')
+        # Handle unknown opcodes.
+        elif code.bytecode[pc] not in opcode_mnemonics():
+            raise TypeError('No such CSPC opcode: ' + str(code.bytecode[pc]))
         pc += 1
+    if DEBUG:
+        print ('LEN:', len(code.bytecode), 'PC:', pc, '\tSTACK:', stack,
+               '\tHEAP:', heap)
     return stack, heap
 
 

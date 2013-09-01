@@ -18,11 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 # pylint: disable=W0602
+# pylint: disable=W0232
 
 try:
     from rpython.rlib import rstring
+    from rpython.objectmodel import specialize
 except ImportError:
-    pass
+    class specialize:
+        def memo(self, func):
+            return func
+    specialize = specialize()
 
 
 __date__ = 'August 2013'
@@ -33,7 +38,6 @@ __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 # Set this switch to False to compile this interpreter with rpython
 DEBUG = True
 
-# TODO: Make access to the opcodes a @purefunction decorated function.
 
 OPCODES = {
     # Integer arithmetic.
@@ -55,12 +59,27 @@ OPCODES = {
     }
 
 
+@specialize.memo
+def opcode(name):
+    return OPCODES[name]
+
+
+@specialize.memo
+def opcode_mnemonics():
+    return OPCODES.keys()
+
+
+@specialize.memo
+def opcode_values():
+    return OPCODES.values()
+
+
 def parse_bytecode_file(bytecode_file):
     """Parse a file of bytecode.
     The argument should be the text of the original file, with
     mnemonic bytecodes. The result will be a code object.
     """
-    from box import CodeBox, ProgramBox
+    from rcsp.box import CodeBox, ProgramBox
     bytecode = []
     # Split bytecode into individual strings.
     # Throw away comments and whitespace.
@@ -94,8 +113,8 @@ def parse_bytecode_file(bytecode_file):
             # TODO: Enable nested functions.
             while code != 'ENDDEF': 
                 # Handle general instructions.
-                if code in OPCODES.keys():
-                    opcodes.append(OPCODES[code])
+                if code in opcode_mnemonics():
+                    opcodes.append(opcode(code))
                 # Handle literals.
                 else:
                     if code.isdigit():
