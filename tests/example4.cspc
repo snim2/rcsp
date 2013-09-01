@@ -1,5 +1,5 @@
 # Simple example which simulates a while loop.
-
+DEF main
 LOAD_CONST 10
 LOAD_NAME counter
 STORE
@@ -16,6 +16,8 @@ MINUS
 LOAD_NAME counter
 STORE 
 JUMP_ABSOLUTE 5
+RETURN 0
+ENDDEF
 
 # >>> def bar():
 # ...     counter = 10

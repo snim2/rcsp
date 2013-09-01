@@ -1,0 +1,15 @@
+# Simple function example...
+DEF foobar
+# think about this
+LOAD_ARG n 
+PRINT_ITEM
+LOAD_CONST 0
+RETURN 0
+ENDDEF
+
+DEF main
+LOAD_GLOBAL foobar
+LOAD_CONST 100
+CALL_FUNCTION foobar
+RETURN 0
+ENDDEF

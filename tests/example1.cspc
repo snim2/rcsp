@@ -1,4 +1,5 @@
 # Print result of 1 + 1
+DEF main
 LOAD_CONST 2
 LOAD_NAME foobar
 STORE
@@ -7,3 +8,5 @@ LOAD_GLOBAL foobar
 TIMES
 PRINT_ITEM
 PRINT_NEWLINE
+RETURN 0
+ENDDEF

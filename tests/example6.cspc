@@ -1,0 +1,4 @@
+# Silly example 
+DEF main
+RETURN 0
+ENDDEF
