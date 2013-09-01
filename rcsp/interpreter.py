@@ -27,7 +27,7 @@ import sys
 from rcsp.box import IntBox
 from rcsp.box import StringBox
 
-from rcsp.parser import opcode, opcode_mnemonics, parse_bytecode_file, DEBUG
+from rcsp.parser import opcode, opcode_values, parse_bytecode_file, DEBUG
 
 try:
     from rpython.rlib.jit import JitDriver
@@ -162,7 +162,7 @@ def mainloop(program):
             stack.append(IntBox(ret_value))
             pc += 1
         # Handle unknown opcodes.
-        elif code.bytecode[pc] not in opcode_mnemonics():
+        elif code.bytecode[pc] not in opcode_values():
             raise TypeError('No such CSPC opcode: ' + str(code.bytecode[pc]))
         pc += 1
     if DEBUG:
