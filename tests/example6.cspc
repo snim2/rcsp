@@ -1,12 +1,13 @@
 # Silly example 
 DEF main
-RETURN 0
+LOAD_CONST 0
+RETURN
 ENDDEF
 
 #
 # TEST_DATA
 #
-# expected = ProgramBox({ 'main' : CodeBox([OPCODES['RETURN'], 0],
+# expected = ProgramBox({ 'main' : CodeBox([OPCODES['LOAD_CONST'], 0, OPCODES['RETURN'], ],
 #                                          [],   # Strings
 #                                          [0],  # Integers
 #                                          [])   # Bools

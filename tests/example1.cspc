@@ -8,7 +8,8 @@ LOAD_GLOBAL foobar
 TIMES
 PRINT_ITEM
 PRINT_NEWLINE
-RETURN 0
+LOAD_CONST 0
+RETURN
 ENDDEF
 
 #
@@ -26,8 +27,10 @@ ENDDEF
 #                                           OPCODES['TIMES'],
 #                                           OPCODES['PRINT_ITEM'],
 #                                           OPCODES['PRINT_NEWLINE'],
+#                                           OPCODES['LOAD_CONST'],
+#                                           2,
 #                                           OPCODES['RETURN'],
-#                                           2],
+#                                           ],
 #                                          ['foobar', 'foobar'], # Strings
 #                                          [2, 5, 0],            # Integers
 #                                          [])                   # Bools

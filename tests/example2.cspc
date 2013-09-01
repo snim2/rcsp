@@ -5,7 +5,8 @@ LOAD_CONST 2
 EQ
 PRINT_ITEM
 PRINT_NEWLINE
-RETURN 0
+LOAD_CONST 0
+RETURN
 ENDDEF
 
 # TEST_DATA
@@ -16,8 +17,10 @@ ENDDEF
 #                                           OPCODES['EQ'],
 #                                           OPCODES['PRINT_ITEM'],
 #                                           OPCODES['PRINT_NEWLINE'],
+#                                           OPCODES['LOAD_CONST'],
+#                                           2,
 #                                           OPCODES['RETURN'],
-#                                           2],
+#                                           ],
 #                                          [],    # Strings
 #                                          [1, 2, 0], # Integers
 #                                          [])    # Bools

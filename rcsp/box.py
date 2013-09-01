@@ -279,9 +279,7 @@ class CodeBox(Box):
             elif self.bytecode[pc] == opcode('MAKE_FUNCTION'):
                 new_bc('MAKE_FUNCTION', pc, output)
             elif self.bytecode[pc] == opcode('RETURN'):
-                new_bc('RETURN ' +
-                       str(self.bytecode[pc + 1]) + '\t(' +
-                       str(self.integers[self.bytecode[pc + 1]]) + ')',
+                new_bc('RETURN ',
                        pc,
                        output)
                 pc += 1

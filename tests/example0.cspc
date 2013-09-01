@@ -6,7 +6,8 @@ LOAD_CONST 1
 ADD
 PRINT_ITEM
 PRINT_NEWLINE
-RETURN 0
+LOAD_CONST 0
+RETURN
 ENDDEF
 
 #
@@ -19,8 +20,10 @@ ENDDEF
 #                                             OPCODES['ADD'],
 #                                             OPCODES['PRINT_ITEM'],
 #                                             OPCODES['PRINT_NEWLINE'],
+#                                             OPCODES['LOAD_CONST'],
+#                                             2,
 #                                             OPCODES['RETURN'],
-#                                             2],
+#                                             ],
 #                                            [],       # Strings
 #                                            [1, 1, 0],# Integers
 #                                            [])       # Bools

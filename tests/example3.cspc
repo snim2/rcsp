@@ -27,7 +27,8 @@ PRINT_ITEM
 JUMP_FORWARD 4
 LOAD_CONST 200
 PRINT_ITEM
-RETURN 0
+LOAD_CONST 0
+RETURN
 ENDDEF
 
 
@@ -47,8 +48,10 @@ ENDDEF
 #                                           OPCODES['LOAD_CONST'],
 #                                           5,
 #                                           OPCODES['PRINT_ITEM'],
+#                                           OPCODES['LOAD_CONST'],
+#                                           6,
 #                                           OPCODES['RETURN'],
-#                                           6],
+#                                           ],
 #                                          [],    # Strings
 #                                          [1, 2, 12, 100, 4, 200, 0],
 #                                          [])    # Bools

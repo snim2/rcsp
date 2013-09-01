@@ -1,24 +1,3 @@
-# Simple example which simulates a while loop.
-DEF main
-LOAD_CONST 10
-LOAD_NAME counter
-STORE
-# This will be pc =  5
-LOAD_CONST 0
-LOAD_GLOBAL counter
-LT
-POP_JUMP_IF_FALSE 25
-LOAD_GLOBAL counter
-PRINT_ITEM
-LOAD_GLOBAL counter
-LOAD_CONST 1
-MINUS
-LOAD_NAME counter
-STORE 
-JUMP_ABSOLUTE 5
-RETURN 0
-ENDDEF
-
 # >>> def bar():
 # ...     counter = 10
 # ...     while counter > 0:
@@ -50,6 +29,28 @@ ENDDEF
 #              43 RETURN_VALUE        
 
 
+# Simple example which simulates a while loop.
+DEF main
+LOAD_CONST 5
+LOAD_NAME counter
+STORE
+# This will be pc =  5
+LOAD_CONST 0
+LOAD_GLOBAL counter
+LT
+POP_JUMP_IF_FALSE 25
+LOAD_GLOBAL counter
+PRINT_ITEM
+LOAD_GLOBAL counter
+LOAD_CONST 1
+MINUS
+LOAD_NAME counter
+STORE 
+JUMP_ABSOLUTE 5
+LOAD_CONST 0
+RETURN
+ENDDEF
+
 # 
 # TEST_DATA
 #
@@ -78,12 +79,14 @@ ENDDEF
 #                                           OPCODES['STORE'],
 #                                           OPCODES['JUMP_ABSOLUTE'],
 #                                           4,
+#                                           OPCODES['LOAD_CONST'],
+#                                           5,
 #                                           OPCODES['RETURN'],
-#                                           5],
+#                                           ],
 #                                          ['counter', 'counter',
 #                                           'counter', 'counter',
 #                                           'counter'],
-#                                          [10, 0, 25, 1, 5, 0],
+#                                          [5, 0, 25, 1, 5, 0],
 #                                          [])
 #                         }
 #                       )

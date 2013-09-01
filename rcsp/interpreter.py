@@ -51,9 +51,11 @@ def mainloop(program):
     """Main loop of the interpreter.
     """
     pc = 0     # Program counter is the 'top' of the stack.
+    fp = {}    # Fn pointer tracks where on the stack each fn was pushed.
     heap = {}  # Only have a global heap for now.
     stack = []
     code = program.get('main')
+    fp['main'] = 0 # main always goes on an empty stack.
     while pc < len(code.bytecode):
         jitdriver.jit_merge_point(pc=pc, code=code,       # Greens.
                                   stack=stack, heap=heap) # Reds.
@@ -158,8 +160,8 @@ def mainloop(program):
         # TODO: 'MAKE_FUNCTION'
         # 'RETURN'
         elif code.bytecode[pc] == opcode('RETURN'):
-            ret_value = code.integers[code.bytecode[pc + 1]]
-            stack.append(IntBox(ret_value))
+            ret_value = stack.pop()
+            stack.append(ret_value)
             pc += 1
         # Handle unknown opcodes.
         elif code.bytecode[pc] not in opcode_values():
