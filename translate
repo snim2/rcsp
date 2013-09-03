@@ -1,14 +1,44 @@
 #!/usr/bin/env python
 
-pypy_dir = '/opt/pypy' # EDIT THIS IF NECESSARY. 
+import fileinput
+import os
+import subprocess
+import sys
 
-if __name__ == '__main__':
-    import subprocess
-    debug_file = 'rcsp/parser.py'
+
+# EDIT THESE IF NECESSARY.
+debug_file = 'rcsp/parser.py'
+debug_on = 'DEBUG = True'
+debug_off = 'DEBUG = False'
+pypy_dir = '/opt/pypy'
+
+
+def replace_all(filename, search_exp, replace_exp):
+    """Replace all occurences of search_exp with replace_exp in filename.
+
+    Code by Jason on:
+    http://stackoverflow.com/questions/39086/search-and-replace-a-line-in-a-file-in-python
+    """
+    for line in fileinput.input(filename, inplace=1, backup='.bak'):
+        if search_exp in line:
+            line = line.replace(search_exp, replace_exp)
+        sys.stdout.write(line)
+        
+
+def main():
+    pwd = os.getcwd()
     rpython = pypy_dir + '/rpython/bin/rpython'
-    opts = '--output=rcsp --opt=jit'
+    opts = [ '--opt=jit' ]
+
     try:
         retcode = subprocess.check_output(['grep', 'DEBUG = True', debug_file])
-        print 'Please turn OFF the DEBUG switch in', debug_file, 'before translating.'
+        print 'Turning OFF the DEBUG switch in', debug_file, 'before translating.'
+        replace_all(debug_file, debug_on, debug_off)
     except subprocess.CalledProcessError:
-        subprocess.call((rpython, opts, 'rcsp/interpreter.py'))
+        pass
+    finally:
+        subprocess.call(tuple([rpython] + opts + ['rcsp/interpreter.py']))
+
+
+if __name__ == '__main__':
+    main()

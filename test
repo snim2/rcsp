@@ -1,12 +1,44 @@
 #!/usr/bin/env python
 
-if __name__ == '__main__':
-    import subprocess
-    debug_file = 'rcsp/parser.py'
+import fileinput
+import subprocess
+import sys
+
+
+# EDIT THESE IF NECESSARY.
+debug_file = 'rcsp/parser.py'
+debug_on = 'DEBUG = True'
+debug_off = 'DEBUG = False'
+    
+
+def replace_all(filename, search_exp, replace_exp):
+    """Replace all occurences of search_exp with replace_exp in filename.
+
+    Code by Jason on:
+    http://stackoverflow.com/questions/39086/search-and-replace-a-line-in-a-file-in-python
+    """
+    for line in fileinput.input(filename, inplace=1, backup='.bak'):
+        if search_exp in line:
+            line = line.replace(search_exp, replace_exp)
+        sys.stdout.write(line)
+
+
+def main():
+    """Check and correct debug switch. Run testing framework.
+    """
     framework = 'pytest.py'
     opts = ''
+
     try:
-        retcode = subprocess.check_output(['grep', 'DEBUG = False', debug_file])
-        print 'Please turn ON the DEBUG switch in', debug_file, 'before testing.'
+        retcode = subprocess.check_output(['grep', debug_off, debug_file])
+        print 'Turning ON the DEBUG switch in', debug_file, 'before testing...'
+        replace_all(debug_file, debug_off, debug_on)
     except subprocess.CalledProcessError:
+        pass
+    finally:
         subprocess.call(('python', framework, opts))
+    return
+
+        
+if __name__ == '__main__':
+    main()

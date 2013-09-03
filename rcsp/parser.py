@@ -22,21 +22,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 try:
     from rpython.rlib import rstring
-    from rpython.objectmodel import specialize
+#    from rpython.rlib.objectmodel import specialize
 except ImportError:
-    class specialize:
-        def memo(self, func):
-            return func
-    specialize = specialize()
+    pass
+    # class specialize:
+    #     def memo(self, func):
+    #         return func
+    # specialize = specialize()
 
 
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 
 
-# Set this switch to True to run this interpreter with CPython
-# Set this switch to False to compile this interpreter with rpython
-DEBUG = True
+# Set this switch to True to run this interpreter with CPython.
+# Set this switch to False to compile this interpreter with rpython.
+# Now changed automatically by the 'test' and 'translate' scripts.
+DEBUG = False
 
 
 OPCODES = {
@@ -59,17 +61,14 @@ OPCODES = {
     }
 
 
-@specialize.memo
 def opcode(name):
     return OPCODES[name]
 
 
-@specialize.memo
 def opcode_mnemonics():
     return OPCODES.keys()
 
 
-@specialize.memo
 def opcode_values():
     return OPCODES.values()
 
