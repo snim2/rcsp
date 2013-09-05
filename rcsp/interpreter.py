@@ -61,7 +61,7 @@ def mainloop(program):
     fp['main'] = 0  # main always goes on an empty stack.
     while pc < len(code.bytecode):
         # Greens = pc, code. Reds = stack, heap.
-        jitdriver.jit_merge_point(pc=pc, code=code, 
+        jitdriver.jit_merge_point(pc=pc, code=code,
                                   stack=stack, heap=heap)
         if DEBUG:
             print ('LEN:', len(code.bytecode), 'PC:', pc,
