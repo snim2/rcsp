@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 # pylint: disable=W0613
 # pylint: disable=W0231
 
@@ -25,7 +24,6 @@ from rcsp.parser import opcode
 # Set this switch to True to run this interpreter with CPython
 # Set this switch to False to compile this interpreter with rpython
 DEBUG = True
-
 
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
@@ -39,9 +37,10 @@ class Box:
     def value(self):
         return self.value
 
+
 class IntBox(Box):
     # TODO: Some of these could be collapsed and refactored.
-    
+
     def __init__(self, integer):
         self.integer = integer
 
@@ -49,22 +48,22 @@ class IntBox(Box):
         if isinstance(integer, IntBox):
             return IntBox(self.integer + integer.integer)
         raise TypeError("Was expecting an IntBox")
-        
+
     def minus(self, integer):
         if isinstance(integer, IntBox):
             return IntBox(self.integer - integer.integer)
         raise TypeError
-        
+
     def times(self, integer):
         if isinstance(integer, IntBox):
             return IntBox(self.integer * integer.integer)
         raise TypeError
-        
+
     def div(self, integer):
         if isinstance(integer, IntBox):
             return IntBox(self.integer / integer.integer)
         raise TypeError
-        
+
     def mod(self, integer):
         if isinstance(integer, IntBox):
             return IntBox(self.integer % integer.integer)
@@ -74,42 +73,48 @@ class IntBox(Box):
         if isinstance(integer, IntBox):
             if self.integer > integer.integer:
                 return BoolBox(True)
-            else: return BoolBox(False)
+            else:
+                return BoolBox(False)
         raise TypeError
 
     def lt(self, integer):
         if isinstance(integer, IntBox):
             if self.integer < integer.integer:
                 return BoolBox(True)
-            else: return BoolBox(False)
+            else:
+                return BoolBox(False)
         raise TypeError
 
     def geq(self, integer):
         if isinstance(integer, IntBox):
             if self.integer >= integer.integer:
                 return BoolBox(True)
-            else: return BoolBox(False)
+            else:
+                return BoolBox(False)
         raise TypeError
 
     def leq(self, integer):
         if isinstance(integer, IntBox):
             if self.integer <= integer.integer:
                 return BoolBox(True)
-            else: return BoolBox(False)
+            else:
+                return BoolBox(False)
         raise TypeError
 
     def eq(self, integer):
         if isinstance(integer, IntBox):
             if self.integer == integer.integer:
                 return BoolBox(True)
-            else: return BoolBox(False)
+            else:
+                return BoolBox(False)
         raise TypeError
 
     def neq(self, integer):
         if isinstance(integer, IntBox):
             if self.integer != integer.integer:
                 return BoolBox(True)
-            else: return BoolBox(False)
+            else:
+                return BoolBox(False)
         raise TypeError
 
     def __repr__(self):
@@ -124,7 +129,7 @@ class IntBox(Box):
                 return True
         return False
 
-    
+
 class StringBox(Box):
 
     def __init__(self, string):
@@ -162,7 +167,7 @@ class BoolBox(Box):
 
 
 class CodeBox(Box):
-    
+
     def __init__(self, bytecode, strings, integers, bools):
         self.bytecode = bytecode
         self.strings = strings
@@ -174,6 +179,7 @@ class CodeBox(Box):
         and the data associated with them.  This is used to
         pretty-print the output of the parser.
         """
+
         def new_bc(bc, pc, output):
             output.append(str(pc) + ':\t' + bc)
         pc = 0
@@ -214,7 +220,7 @@ class CodeBox(Box):
             elif self.bytecode[pc] == opcode('LOAD_GLOBAL'):
                 new_bc('LOAD_GLOBAL ' +
                        str(self.bytecode[pc + 1]) + '\t(' +
-                       self.strings[self.bytecode[pc + 1]] + ')', 
+                       self.strings[self.bytecode[pc + 1]] + ')',
                        pc,
                        output)
                 pc += 1
@@ -285,7 +291,7 @@ class CodeBox(Box):
                 pc += 1
             # Unknown bytecode.
             else:
-                raise TypeError('No such CSPC opcode: ' + str(self.bytecode[pc]))
+                raise TypeError('No such opcode: ' + str(self.bytecode[pc]))
             pc += 1
         output.append('\n')
         output.append('DATA:')
@@ -303,17 +309,17 @@ class CodeBox(Box):
 
     def bool_list_to_str(self, lst):
         s_lst = [str(l) for l in lst]
-        return '[ ' + ', '.join(s_lst) + ' ]'    
-    
+        return '[ ' + ', '.join(s_lst) + ' ]'
+
     def int_list_to_str(self, lst):
         s_lst = [str(l) for l in lst]
         return '[ ' + ', '.join(s_lst) + ' ]'
 
 
 class ProgramBox(Box):
-    
+
     def __init__(self, cb_dict):
-        self.functions = cb_dict # dict of code boxes
+        self.functions = cb_dict  # dict of code boxes
 
     def get(self, name):
         return self.functions[name]

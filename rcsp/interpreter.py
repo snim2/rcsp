@@ -16,7 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 # pylint: disable=W0613
 # pylint: disable=W0231
 # pylint: disable=W0602
@@ -33,10 +32,14 @@ try:
     from rpython.rlib.jit import JitDriver
 except ImportError:
     class JitDriver(object):
-        def __init__(self,**kw): pass
-        def jit_merge_point(self,**kw): pass
-        def can_enter_jit(self,**kw): pass
+        def __init__(self, **kw):
+            pass
 
+        def jit_merge_point(self, **kw):
+            pass
+
+        def can_enter_jit(self, **kw):
+            pass
 
 # In the mainloop function green variables are read from, and
 # red variables are written to.
@@ -55,12 +58,14 @@ def mainloop(program):
     heap = {}  # Only have a global heap for now.
     stack = []
     code = program.get('main')
-    fp['main'] = 0 # main always goes on an empty stack.
+    fp['main'] = 0  # main always goes on an empty stack.
     while pc < len(code.bytecode):
-        jitdriver.jit_merge_point(pc=pc, code=code,       # Greens.
-                                  stack=stack, heap=heap) # Reds.
+        # Greens = pc, code. Reds = stack, heap.
+        jitdriver.jit_merge_point(pc=pc, code=code, 
+                                  stack=stack, heap=heap)
         if DEBUG:
-            print 'LEN:', len(code.bytecode), 'PC:', pc, '\tSTACK:', stack, '\tHEAP:', heap
+            print ('LEN:', len(code.bytecode), 'PC:', pc,
+                   '\tSTACK:', stack, '\tHEAP:', heap)
         # Arithmetic operation code.bytecodes.
         if code.bytecode[pc] == opcode('ADD'):
             r = stack.pop()
@@ -106,7 +111,7 @@ def mainloop(program):
         elif code.bytecode[pc] == opcode('NEQ'):
             r = stack.pop()
             l = stack.pop()
-            stack.append(l.neq(r))        
+            stack.append(l.neq(r))
         # I/O code.bytecodes.
         elif code.bytecode[pc] == opcode('PRINT_ITEM'):
             value = stack.pop()
@@ -118,7 +123,7 @@ def mainloop(program):
             # TODO: A bit of error checking here would be nice.
             name = stack.pop().string
             lit = stack.pop().integer
-            heap[name] =  lit
+            heap[name] = lit
         elif code.bytecode[pc] == opcode('LOAD_GLOBAL'):
             # TODO: Should the heap really hold raw string / int types?
             # TODO: Probably not.
@@ -168,7 +173,8 @@ def mainloop(program):
             raise TypeError('No such CSPC opcode: ' + str(code.bytecode[pc]))
         pc += 1
     if DEBUG:
-        print 'LEN:', len(code.bytecode), 'PC:', pc, '\tSTACK:', stack, '\tHEAP:', heap
+        print ('LEN:', len(code.bytecode), 'PC:', pc,
+               '\tSTACK:', stack, '\tHEAP:', heap)
     return stack, heap
 
 
@@ -181,7 +187,8 @@ def run(fp):
         program_contents += read
     os.close(fp)
     program = parse_bytecode_file(program_contents)
-    if DEBUG: print program
+    if DEBUG:
+        print program
     _, _ = mainloop(program)
 
 
