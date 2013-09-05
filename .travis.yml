@@ -9,4 +9,5 @@ python:
   # maintainers to fix their pypy-dev package.
   - "pypy"
 # command to run tests
-script: pytest.py
+script: 
+  - python pytest.py
