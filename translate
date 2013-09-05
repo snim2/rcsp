@@ -5,7 +5,6 @@ import os
 import subprocess
 import sys
 
-
 # EDIT THESE IF NECESSARY.
 debug_file = 'rcsp/parser.py'
 debug_on = 'DEBUG = True'
@@ -16,23 +15,24 @@ pypy_dir = '/opt/pypy'
 def replace_all(filename, search_exp, replace_exp):
     """Replace all occurences of search_exp with replace_exp in filename.
 
-    Code by Jason on:
-    http://stackoverflow.com/questions/39086/search-and-replace-a-line-in-a-file-in-python
+    Code by Jason on stackoverflow.com:
+    .../questions/39086/search-and-replace-a-line-in-a-file-in-python
     """
     for line in fileinput.input(filename, inplace=1, backup='.bak'):
         if search_exp in line:
             line = line.replace(search_exp, replace_exp)
         sys.stdout.write(line)
-        
+
 
 def main():
     pwd = os.getcwd()
     rpython = pypy_dir + '/rpython/bin/rpython'
-    opts = [ '--opt=jit' ]
+    opts = ['--opt=jit']
 
     try:
         retcode = subprocess.check_output(['grep', 'DEBUG = True', debug_file])
-        print 'Turning OFF the DEBUG switch in', debug_file, 'before translating.'
+        print 'Turning OFF the DEBUG switch in', debug_file,
+        print 'before translating.'
         replace_all(debug_file, debug_on, debug_off)
     except subprocess.CalledProcessError:
         pass
