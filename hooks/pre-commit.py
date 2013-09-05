@@ -54,7 +54,11 @@ def main():
     print '============ Enforcing PEP8 rules ============='
     for filename in staged_files:
         subprocess.call(('pep8ify', '-w', filename))
-        subprocess.call(('git', 'add', '-q', 'filename'))
+        try:
+            os.unlink(filename + '.bak')
+        except OSError:
+            pass
+        subprocess.call(('git', 'add', '-u', 'filename'))
     print
     print '========== Checking PEP8 conformance =========='
     for filename in staged_files:
@@ -67,13 +71,6 @@ def main():
             print
             print '========= Found PEP8 non-conformance =========='
             print output
-
-    # Remove .bak files created by PEP8ify.
-    for filename in staged_files:
-        try:
-            os.unlink(filename + '.bak')
-        except OSError:
-            continue
     # Run unit tests.
     print
     print '============== Running unit tests ============='
@@ -90,6 +87,8 @@ def main():
                     stdout=subprocess.PIPE)
     # Should we abort this commit?
     if abort:
+        print
+        print '=============== ABORTING commit ==============='
         sys.exit(1)
     else:
         sys.exit(0)
