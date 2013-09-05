@@ -55,6 +55,7 @@ def mainloop(program):
     """
     pc = 0     # Program counter is the 'top' of the stack.
     fp = {}    # Fn pointer tracks where on the stack each fn was pushed.
+    # TODO: pre-compute heap size and allocate at start.
     heap = {}  # Only have a global heap for now.
     stack = []
     code = program.get('main')

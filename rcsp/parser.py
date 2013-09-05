@@ -33,10 +33,12 @@ except ImportError:
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
 
-# Set this switch to True to run this interpreter with CPython.
-# Set this switch to False to compile this interpreter with rpython.
-# Now changed automatically by the 'test' and 'translate' scripts.
+# Set this switch to True to run this interpreter with CPython (for
+# testing and False to compile this interpreter with rpython. This
+# switch is set automatically by the test and translate scripts in the
+# root of the repository.
 DEBUG = False
+
 
 OPCODES = {
     # Integer arithmetic.
@@ -73,8 +75,10 @@ def opcode_values():
 
 def parse_bytecode_file(bytecode_file):
     """Parse a file of bytecode.
+
     The argument should be the text of the original file, with
-    mnemonic bytecodes. The result will be a code object.
+    mnemonic bytecodes. The result will be a rcsp.box.ProgramBox
+    object.
     """
     from rcsp.box import CodeBox, ProgramBox
     bytecode = []
@@ -94,7 +98,6 @@ def parse_bytecode_file(bytecode_file):
             else:
                 bytecode.extend(rstring.split(line))
     # Parse bytecodes into numeric opcodes.
-    # codes included here for future-proofing.
     functions = {}  # Dict of str names -> CodeBox objects
     counter = 0
     while counter < len(bytecode):
@@ -125,7 +128,6 @@ def parse_bytecode_file(bytecode_file):
                         opcodes.append(len(strings) - 1)
                 counter += 1
                 code = bytecode[counter]
-            # codes_ is an empty list since we don't yet have nested fns.
             functions[name] = CodeBox(opcodes, strings, integers, bools)
             # Ignore ENDDEF
             counter += 1

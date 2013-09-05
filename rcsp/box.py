@@ -1,5 +1,5 @@
 """
-Interpreter for a simple CSP language.
+Interpreter for a simple CSP bytecode language.
 
 Copyright (C) Sarah Mount, 2013.
 
@@ -21,9 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from rcsp.parser import opcode
 
-# Set this switch to True to run this interpreter with CPython
-# Set this switch to False to compile this interpreter with rpython
-DEBUG = True
 
 __date__ = 'August 2013'
 __author__ = 'Sarah Mount <s.mount@wlv.ac.uk>'
