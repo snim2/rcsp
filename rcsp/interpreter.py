@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # pylint: disable=W0231
 # pylint: disable=W0602
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -65,8 +67,8 @@ def mainloop(program):
         jitdriver.jit_merge_point(pc=pc, code=code,
                                   stack=stack, heap=heap)
         if DEBUG:
-            print ('LEN:', len(code.bytecode), 'PC:', pc,
-                   '\tSTACK:', stack, '\tHEAP:', heap)
+            print('LEN:', len(code.bytecode), 'PC:', pc,
+                  '\tSTACK:', stack, '\tHEAP:', heap)
         # Arithmetic operation code.bytecodes.
         if code.bytecode[pc] == opcode('ADD'):
             r = stack.pop()
@@ -116,9 +118,9 @@ def mainloop(program):
         # I/O code.bytecodes.
         elif code.bytecode[pc] == opcode('PRINT_ITEM'):
             value = stack.pop()
-            print value.__repr__()
+            print(value.__repr__())
         elif code.bytecode[pc] == opcode('PRINT_NEWLINE'):
-            print
+            print()
         # Global variable code.bytecodes.
         elif code.bytecode[pc] == opcode('STORE'):
             # TODO: A bit of error checking here would be nice.
@@ -174,8 +176,8 @@ def mainloop(program):
             raise TypeError('No such CSPC opcode: ' + str(code.bytecode[pc]))
         pc += 1
     if DEBUG:
-        print ('LEN:', len(code.bytecode), 'PC:', pc,
-               '\tSTACK:', stack, '\tHEAP:', heap)
+        print('LEN:', len(code.bytecode), 'PC:', pc,
+              '\tSTACK:', stack, '\tHEAP:', heap)
     return stack, heap
 
 
@@ -189,7 +191,7 @@ def run(fp):
     os.close(fp)
     program = parse_bytecode_file(program_contents)
     if DEBUG:
-        print program
+        print(program)
     _, _ = mainloop(program)
 
 
@@ -197,7 +199,7 @@ def entry_point(argv):
     try:
         filename = argv[1]
     except IndexError:
-        print 'You must supply a filename'
+        print('You must supply a filename')
         return 1
     run(os.open(filename, os.O_RDONLY, 0777))
     return 0

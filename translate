@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import fileinput
 import os
 import subprocess
@@ -31,8 +33,8 @@ def main():
 
     try:
         retcode = subprocess.check_output(['grep', 'DEBUG = True', debug_file])
-        print 'Turning OFF the DEBUG switch in', debug_file,
-        print 'before translating.'
+        print('Turning OFF the DEBUG switch in', debug_file,
+              'before translating.')
         replace_all(debug_file, debug_on, debug_off)
     except subprocess.CalledProcessError:
         pass
