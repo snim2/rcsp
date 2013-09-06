@@ -18,7 +18,7 @@ def replace_all(filename, search_exp, replace_exp):
     Code by Jason on stackoverflow.com:
     .../questions/39086/search-and-replace-a-line-in-a-file-in-python
     """
-    for line in fileinput.input(filename, inplace=1, backup='.bak'):
+    for line in fileinput.input(filename, inplace=1, backup='.bak', mode='rU'):
         if search_exp in line:
             line = line.replace(search_exp, replace_exp)
         sys.stdout.write(line)
