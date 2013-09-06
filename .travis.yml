@@ -10,4 +10,5 @@ python:
   - "pypy"
 # command to run tests
 script: 
-  - python pytest.py
+  - python ./test
+  - if [[ $TRAVIS_PYTHON_VERSION == pypy ]]; then python ./translate
